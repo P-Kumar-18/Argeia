@@ -1,19 +1,38 @@
 # Argeia
 
-Argeia is a web-based schedule and procrastination tracker built with Flask.  
-The goal of this project is not just to manage tasks, but to analyze *behavior* — identifying delays, missed schedules, and procrastination patterns over time.
+Argeia is a schedule and procrastination tracker focused on understanding **behavior over time**, not just managing tasks.
 
-This project is being developed as a learning-focused application with clean architecture, incremental development, and real-world design practices.
+Instead of only tracking *what* needs to be done, Argeia models:
+- when tasks were planned
+- when they were actually started
+- how long they were worked on
+- and where procrastination occurs (late start, no start, early stop)
+
+This project is being developed incrementally with a strong emphasis on **clean architecture, testability, and real-world design practices**.
 
 ---
 
-## 🚀 Features (Planned)
-- Create and manage scheduled tasks
-- Track when tasks are started and completed
-- Detect delays and procrastination patterns
-- Store data persistently using a database (SQLite)
-- Simple web interface using Flask and templates
-- Future insights and analytics
+## 🚀 Current Features
+- Define tasks with planned start and end times
+- Track actual task execution (start / completion)
+- Detect different forms of procrastination:
+  - starting late
+  - never starting (timeout)
+  - stopping early (underworking)
+- Core logic implemented as pure Python domain models
+- Comprehensive unit tests for time-based edge cases
+
+---
+
+## 🧪 Procrastination Model
+
+Argeia currently identifies procrastination through three independent signals:
+
+- **Start Delay** — starting later than scheduled
+- **Timeout** — never starting after the planned window ends
+- **Underwork** — completing a task earlier than planned
+
+Each signal is isolated, testable, and designed to be combined later into higher-level insights.
 
 ---
 
@@ -24,7 +43,10 @@ argeia/
 ├── app/
 │   ├── __init__.py      # Flask app factory
 │   ├── main.py          # Application entry point
-│   └── routes.py        # Web routes
+│   ├── routes.py        # Web routes
+│   └── tracker.py       # Core task & procrastination logic
+├── tests/
+│   └── test_task.py     # Tests for Task behavior
 ├── requirements.txt
 ├── .gitignore
 └── README.md
@@ -56,13 +78,19 @@ pip install -r requirements.txt
 python app/main.py
 ```
 
-You should see a confirmation message indicating the app is running.
+### 5. Tests
+```bash
+python -m pytest
+```
+
+All tests should pass.
 
 ---
 
 ## 📚 Tech Stack
 - Python
-- Flask
+- Pytest (testing)
+- Flask (app setup in progress)
 - SQLite (planned)
 - HTML / CSS (planned)
 
@@ -70,7 +98,7 @@ You should see a confirmation message indicating the app is running.
 
 ## 🎯 Project Status
 Currently in early development.  
-Core structure and routing are set up; task modeling and tracking logic are next.
+Core task domain logic and procrastination detection implemented and fully tested.
 
 ---
 
