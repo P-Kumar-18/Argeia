@@ -2,8 +2,8 @@ from datetime import datetime
 
 class Task:
     '''
-        Task and Tracing field
-        may be seperated in the future.
+        Task and Tracking field
+        may be separated in the future.
     '''
 
     # Planning/Behavior
