@@ -41,17 +41,18 @@ Each signal is isolated, testable, and designed to be combined later into higher
 ```
 argeia/
 ├── app/
-│   ├── __init__.py         # Flask app factory
-│   ├── main.py             # Application entry point
-│   ├── routes.py           # Web routes
-│   └── tracker.py          # Core task & procrastination logic
+│   ├── __init__.py                   # Flask app factory
+│   ├── main.py                       # Application entry point
+│   ├── routes.py                     # Web routes
+│   └── tracker.py                    # Core task & procrastination logic
 ├── tests/
-│   └── test_task.py        # Tests for Task behavior
+│   └── test_task.py                  # Tests for Task behavior
 ├── requirements.txt
 ├── .gitignore
-├── DESIGN.md               # high-level system design
+├── DESIGN.md                         # High-level system design
 ├── docs/
-│   └── behavior_model.md   # procrastination behavior & state model
+│   └── behavior_model.md             # Procrastination behavior & state model
+│   └── state_transition_tests.md     # State tests model
 └── README.md
 ```
 
