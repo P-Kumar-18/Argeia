@@ -1,10 +1,7 @@
 from datetime import datetime
 
 class Task:
-    '''
-        Task and Tracking field
-        may be separated in the future.
-    '''
+    # Task and Tracking field may be separated in the future.
 
     # Planning/Behavior
     def __init__(self, task_id, title, start_time, end_time,  user_id=None, comment=None):

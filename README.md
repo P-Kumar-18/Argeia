@@ -21,6 +21,11 @@ This project is being developed incrementally with a strong emphasis on **clean 
   - stopping early (underworking)
 - Core logic implemented as pure Python domain models
 - Comprehensive unit tests for time-based edge cases
+- Behavioral state engine modeling long-term engagement:
+  - Stable → Drifting → Strained → Disengaged
+- State transitions driven by confirmed behavior patterns, not single events
+- Symmetry-protected recovery and degradation rules
+- Comprehensive unit tests enforcing state transition invariants
 
 ---
 
@@ -34,6 +39,10 @@ Argeia currently identifies procrastination through three independent signals:
 
 Each signal is isolated, testable, and designed to be combined later into higher-level insights.
 
+These signals are evaluated over time and combined into higher-level **behavioral patterns**, which drive Argeia’s state-based interpretation of user engagement.
+
+State transitions are intentionally slow-moving, pattern-driven, and designed to be fair to one-off mistakes.
+
 ---
 
 ## 🧱 Project Structure
@@ -44,9 +53,11 @@ argeia/
 │   ├── __init__.py                   # Flask app factory
 │   ├── main.py                       # Application entry point
 │   ├── routes.py                     # Web routes
+│   ├── state_engine.py               # Behavioral state transition engine
 │   └── tracker.py                    # Core task & procrastination logic
 ├── tests/
-│   └── test_task.py                  # Tests for Task behavior
+│   ├── test_task.py                  # Tests for Task behavior
+│   └── test_state_transitions.py     # Tests for behavioral state transitions
 ├── requirements.txt
 ├── .gitignore
 ├── DESIGN.md                         # High-level system design
@@ -102,7 +113,8 @@ All tests should pass.
 
 ## 🎯 Project Status
 Currently in early development.  
-Core task domain logic and procrastination detection implemented and fully tested.
+Core task logic, procrastination signal detection, and a fully tested behavioral state engine have been implemented.
+
 
 ---
 
