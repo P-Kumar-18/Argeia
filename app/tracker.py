@@ -41,9 +41,6 @@ class Task:
 
         current_time = current_time or datetime.now()
 
-        if current_time <= self.scheduled_for_end:
-            return None
-
         delta = self.scheduled_for_end - self.scheduled_for_start
         return int(delta.total_seconds() // 60)
     
