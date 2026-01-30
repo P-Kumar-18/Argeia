@@ -8,14 +8,35 @@ def compute_start_delay_signal(
         (task.scheduled_for_end - task.scheduled_for_start).total_seconds() / 60
     )
 
-    if delay_time is None:
-        timeout_time = task.timeout_time()
-        return {
-            "timeout_time": timeout_time, 
-            "planned_duration": total_time
-        }
-    
     return {
         "delay_time": delay_time, 
+        "planned_duration": total_time
+    }
+
+
+def compute_underwork_signal(
+        task: Task
+)-> dict:
+    underwork_time = task.underwork_time()
+    total_time = int(
+        (task.scheduled_for_end - task.scheduled_for_start).total_seconds() / 60
+    )
+
+    return {
+        "underwork_time": underwork_time,
+        "planned_duration": total_time
+    }
+
+
+def compute_timeout_time(
+        task: Task
+)-> dict:
+    timeout_time = task.timeout_time()
+    total_time = int(
+        (task.scheduled_for_end - task.scheduled_for_start).total_seconds() / 60
+    )
+
+    return {
+        "timeout_time": timeout_time,
         "planned_duration": total_time
     }

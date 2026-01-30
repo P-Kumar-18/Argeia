@@ -26,7 +26,11 @@ This project is being developed incrementally with a strong emphasis on **clean 
 - State transitions driven by confirmed behavior patterns, not single events
 - Symmetry-protected recovery and degradation rules
 - Comprehensive unit tests enforcing state transition invariants
-- Analytical signal extraction (e.g. start delay, timeout) with unit tests
+- Signal extraction layer for behavioral analysis:
+  - start delay
+  - underwork
+  - timeout
+- Signals expose absolute, deterministic deviations for pattern detection
 
 ---
 
@@ -37,6 +41,8 @@ Argeia currently identifies procrastination through three independent signals:
 - **Start Delay** — starting later than scheduled
 - **Timeout** — never starting after the planned window ends
 - **Underwork** — completing a task earlier than planned
+
+Signals are treated as factual measurements and do not encode severity or judgment.
 
 Each signal is isolated, testable, and designed to be combined later into higher-level insights.
 

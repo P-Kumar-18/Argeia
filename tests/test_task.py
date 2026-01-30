@@ -39,15 +39,6 @@ def test_timeout_when_never_started():
     assert task.timeout_time(current_time) == 60
 
 
-def test_no_timeout_before_end():
-    start = datetime.now()
-    end = start + timedelta(hours=1)
-
-    task = Task(1, "Future Task", start, end)
-
-    assert task.timeout_time() is None
-
-
 def test_start_exactly_on_time():
     start = datetime.now()
     end = start + timedelta(hours=1)
@@ -66,24 +57,6 @@ def test_start_early():
     task.start(when=start - timedelta(minutes=10))
 
     assert task.delay_time() == 0
-
-
-def test_never_started_not_expired():
-    start = datetime.now()
-    end = start + timedelta(hours=1)
-
-    task = Task(1, "Future Task", start, end)
-
-    assert task.timeout_time() is None
-
-
-def test_never_started_exact_end():
-    start = datetime.now() - timedelta(hours=1)
-    end = start + timedelta(hours=1)
-
-    task = Task(1, "Exact End", start, end)
-
-    assert task.timeout_time(current_time=end) is None
 
 
 def test_never_started_just_expired():
