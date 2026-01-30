@@ -26,6 +26,7 @@ This project is being developed incrementally with a strong emphasis on **clean 
 - State transitions driven by confirmed behavior patterns, not single events
 - Symmetry-protected recovery and degradation rules
 - Comprehensive unit tests enforcing state transition invariants
+- Analytical signal extraction (e.g. start delay, timeout) with unit tests
 
 ---
 
@@ -54,10 +55,12 @@ argeia/
 │   ├── main.py                       # Application entry point
 │   ├── routes.py                     # Web routes
 │   ├── state_engine.py               # Behavioral state transition engine
+│   ├── signals.py                    # Task domain & execution facts
 │   └── tracker.py                    # Core task & procrastination logic
 ├── tests/
 │   ├── test_task.py                  # Tests for Task behavior
-│   └── test_state_transitions.py     # Tests for behavioral state transitions
+│   ├── test_state_transitions.py     # Tests for behavioral state transitions
+│   └── test_signals.py               # Tests for signal extraction (start delay) 
 ├── requirements.txt
 ├── .gitignore
 ├── DESIGN.md                         # High-level system design
@@ -114,7 +117,6 @@ All tests should pass.
 ## 🎯 Project Status
 Currently in early development.  
 Core task logic, procrastination signal detection, and a fully tested behavioral state engine have been implemented.
-
 
 ---
 
