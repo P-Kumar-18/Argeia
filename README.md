@@ -31,6 +31,12 @@ This project is being developed incrementally with a strong emphasis on **clean 
   - underwork
   - timeout
 - Signals expose absolute, deterministic deviations for pattern detection
+- Pattern detection layer interpreting signals over time:
+  - window-level pattern confirmation (noise vs habit)
+  - pattern polarity (positive / negative)
+  - pattern strength (low / high, for confirmed patterns only)
+  - sustained positive pattern detection across windows
+- Clear separation between pattern description and state transition policy
 
 ---
 
@@ -50,6 +56,13 @@ These signals are evaluated over time and combined into higher-level **behaviora
 
 State transitions are intentionally slow-moving, pattern-driven, and designed to be fair to one-off mistakes.
 
+Patterns are detected at two levels:
+- window-level patterns identify consistent behavior within a bounded set of tasks
+- sustained patterns evaluate improvement consistency across multiple windows
+
+Negative patterns may influence state degradation once confirmed.
+Positive patterns require sustained confirmation across windows before recovery is allowed, ensuring recovery is intentionally slower than degradation.
+
 ---
 
 ## 🧱 Project Structure
@@ -60,18 +73,21 @@ argeia/
 │   ├── __init__.py                   # Flask app factory
 │   ├── main.py                       # Application entry point
 │   ├── routes.py                     # Web routes
-│   ├── state_engine.py               # Behavioral state transition engine
-│   ├── signals.py                    # Task domain & execution facts
-│   └── tracker.py                    # Core task & procrastination logic
+│   ├── tracker.py                    # Core task & procrastination logic
+│   ├── signals.py                    # Analytical signal extraction
+│   ├── pattern_detection.py          # Pattern detection
+│   └── state_engine.py               # Behavioral state transition engine
 ├── tests/
 │   ├── test_task.py                  # Tests for Task behavior
-│   ├── test_state_transitions.py     # Tests for behavioral state transitions
-│   └── test_signals.py               # Tests for signal extraction (start delay) 
+│   ├── test_signals.py               # Tests for signal extraction
+│   ├── test_pattern_detection.py     # Tests for pattern detection
+│   └── test_state_transitions.py     # Tests for behavioral state transitions
 ├── requirements.txt
 ├── .gitignore
 ├── DESIGN.md                         # High-level system design
 ├── docs/
-│   └── behavior_model.md             # Procrastination behavior & state model
+│   ├── behavior_model.md             # Procrastination behavior & state model
+│   ├── pattern_model.md              # Patterns model
 │   └── state_transition_tests.md     # State tests model
 └── README.md
 ```
@@ -121,8 +137,10 @@ All tests should pass.
 ---
 
 ## 🎯 Project Status
-Currently in early development.  
-Core task logic, procrastination signal detection, and a fully tested behavioral state engine have been implemented.
+Core task logic, analytical signal extraction, pattern detection, and a fully tested behavioral state engine have been implemented.
+
+
+The system now models procrastination as a progression of signals → patterns → states, with recovery intentionally slower and pattern-driven.
 
 ---
 
