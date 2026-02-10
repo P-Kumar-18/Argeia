@@ -2,11 +2,11 @@ from enum import Enum
 
 # NOTE: strength thresholds are provisional and subject to tuning
 
-class pattern_polarity_type(Enum):
+class Pattern_polarity_type(Enum):
     NEGATIVE = "negative"
     POSITIVE = "positive" 
 
-class pattern_strength_type(Enum):
+class Pattern_strength_type(Enum):
     LOW = "low"
     HIGH = "high"
 
@@ -63,10 +63,10 @@ def pattern_confirmation(count: dict):
 # NOTE: strength thresholds are intentionally stricter than confirmation thresholds
 def pattern_strength(count: dict):
     if (count["strong"] >= 2) or (count["moderate"] >= 3) or (count["weak"] >= 12):
-        return pattern_strength_type.HIGH
+        return Pattern_strength_type.HIGH
     
     else:
-        return pattern_strength_type.LOW
+        return Pattern_strength_type.LOW
 
 
 
@@ -93,7 +93,7 @@ def detect_pattern(signals: list):
         
         return {
             "confirmed": confirmed_pattern,
-            "polarity": pattern_polarity_type.NEGATIVE,
+            "polarity": Pattern_polarity_type.NEGATIVE,
             "strength": strength
         }
     
@@ -105,22 +105,6 @@ def detect_pattern(signals: list):
 
         return {
             "confirmed": confirmed,
-            "polarity": pattern_polarity_type.POSITIVE,
+            "polarity": Pattern_polarity_type.POSITIVE,
             "strength": None
-        }
-
-
-def detect_sustained_pattern(windows: list, required_windows: int = 3):
-    if len(windows) < required_windows:
-        return False
-
-    relevant_windows = windows[-required_windows:]
-
-    for window in relevant_windows:
-        if (
-        window["polarity"] != pattern_polarity_type.POSITIVE
-        or window["confirmed"] is not True
-    ):
-            return False
-    
-    return True             
+        }             

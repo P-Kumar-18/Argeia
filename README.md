@@ -15,28 +15,23 @@ This project is being developed incrementally with a strong emphasis on **clean 
 ## 🚀 Current Features
 - Define tasks with planned start and end times
 - Track actual task execution (start / completion)
-- Detect different forms of procrastination:
-  - starting late
-  - never starting (timeout)
-  - stopping early (underworking)
-- Core logic implemented as pure Python domain models
-- Comprehensive unit tests for time-based edge cases
-- Behavioral state engine modeling long-term engagement:
-  - Stable → Drifting → Strained → Disengaged
-- State transitions driven by confirmed behavior patterns, not single events
-- Symmetry-protected recovery and degradation rules
-- Comprehensive unit tests enforcing state transition invariants
-- Signal extraction layer for behavioral analysis:
+- Detect procrastination signals:
   - start delay
   - underwork
   - timeout
-- Signals expose absolute, deterministic deviations for pattern detection
-- Pattern detection layer interpreting signals over time:
-  - window-level pattern confirmation (noise vs habit)
+- Analytical signal layer exposing absolute deviations
+- Pattern detection layer that interprets repeated signals over time:
+  - window-level confirmation
   - pattern polarity (positive / negative)
-  - pattern strength (low / high, for confirmed patterns only)
-  - sustained positive pattern detection across windows
-- Clear separation between pattern description and state transition policy
+  - pattern strength (low / high)
+  - sustained positive patterns across windows
+- Behavioral state engine modeling long-term engagement:
+  - Stable → Drifting → Strained → Disengaged
+- Behavior evaluator that integrates patterns with the state engine
+- Asymmetric behavior model:
+  - degradation can occur quickly
+  - recovery requires sustained improvement
+- Comprehensive unit tests covering signals, patterns, and state transitions
 
 ---
 
@@ -60,8 +55,24 @@ Patterns are detected at two levels:
 - window-level patterns identify consistent behavior within a bounded set of tasks
 - sustained patterns evaluate improvement consistency across multiple windows
 
-Negative patterns may influence state degradation once confirmed.
+Confirmed negative patterns may influence state degradation.
 Positive patterns require sustained confirmation across windows before recovery is allowed, ensuring recovery is intentionally slower than degradation.
+
+---
+
+## 🧠 Behavior Model Overview
+
+Argeia models procrastination as a progression of behavioral layers:
+
+Task → Signals → Patterns → States
+
+- **Signals** measure raw deviations from planned behavior.
+- **Patterns** interpret signals over time to detect consistent trends.
+- **States** represent long-term engagement and are updated conservatively.
+
+Negative behavior can degrade state quickly, while recovery is intentionally slower
+and requires sustained positive patterns. This design prevents overreacting to
+one-off mistakes or short-term improvements.
 
 ---
 
@@ -76,8 +87,10 @@ argeia/
 │   ├── tracker.py                    # Core task & procrastination logic
 │   ├── signals.py                    # Analytical signal extraction
 │   ├── pattern_detection.py          # Pattern detection
+│   ├── behavior_evaluator.py         # Behavior evaluator and state integration
 │   └── state_engine.py               # Behavioral state transition engine
 ├── tests/
+│   ├── test_behavior_evaluator.py    # Tests for Behavior Evaluator
 │   ├── test_task.py                  # Tests for Task behavior
 │   ├── test_signals.py               # Tests for signal extraction
 │   ├── test_pattern_detection.py     # Tests for pattern detection
@@ -137,10 +150,14 @@ All tests should pass.
 ---
 
 ## 🎯 Project Status
-Core task logic, analytical signal extraction, pattern detection, and a fully tested behavioral state engine have been implemented.
 
+The behavioral core of Argeia is complete and fully tested.
 
-The system now models procrastination as a progression of signals → patterns → states, with recovery intentionally slower and pattern-driven.
+Implemented:
+- Task domain model
+- Procrastination signal extraction
+- Pattern detection and sustainment logic
+- Pattern-driven behavioral state transitions
 
 ---
 
