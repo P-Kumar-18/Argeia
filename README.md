@@ -24,7 +24,10 @@ This project is being developed incrementally with a strong emphasis on **clean 
   - window-level confirmation
   - pattern polarity (positive / negative)
   - pattern strength (low / high)
-  - sustained positive patterns across windows
+- Behavior evaluation layer that:
+  - derives sustained improvement across windows
+  - determines degradation severity
+  - produces structured proposals for the state engine
 - Behavioral state engine modeling long-term engagement:
   - Stable → Drifting → Strained → Disengaged
 - Behavior evaluator that integrates patterns with the state engine
@@ -47,9 +50,10 @@ Signals are treated as factual measurements and do not encode severity or judgme
 
 Each signal is isolated, testable, and designed to be combined later into higher-level insights.
 
-These signals are evaluated over time and combined into higher-level **behavioral patterns**, which drive Argeia’s state-based interpretation of user engagement.
+These signals are evaluated over time and combined into higher-level behavioral patterns.
+Pattern evidence is interpreted by the behavior evaluation layer, which produces structured proposals (degradation or recovery) for the state engine.
 
-State transitions are intentionally slow-moving, pattern-driven, and designed to be fair to one-off mistakes.
+State transitions are intentionally slow-moving and proposal-driven, designed to be fair to one-off mistakes..
 
 Patterns are detected at two levels:
 - window-level patterns identify consistent behavior within a bounded set of tasks
@@ -64,15 +68,17 @@ Positive patterns require sustained confirmation across windows before recovery 
 
 Argeia models procrastination as a progression of behavioral layers:
 
-Task → Signals → Patterns → States
+Events → Signals → Patterns → Behavior Evaluation → State Engine → Score
 
 - **Signals** measure raw deviations from planned behavior.
 - **Patterns** interpret signals over time to detect consistent trends.
 - **States** represent long-term engagement and are updated conservatively.
 
-Negative behavior can degrade state quickly, while recovery is intentionally slower
-and requires sustained positive patterns. This design prevents overreacting to
-one-off mistakes or short-term improvements.
+Degradation proposals may move state quickly, while recovery proposals always move state one step at a time and require sustained positive behavior.
+This design prevents overreacting to one-off mistakes or short-term improvements.
+
+The behavior evaluation layer resolves conflicts (e.g., simultaneous positive and negative evidence) before proposals reach the state engine.
+The state engine does not inspect patterns directly.
 
 ---
 
@@ -156,8 +162,8 @@ The behavioral core of Argeia is complete and fully tested.
 Implemented:
 - Task domain model
 - Procrastination signal extraction
-- Pattern detection and sustainment logic
-- Pattern-driven behavioral state transitions
+- Pattern detection and behavioral evaluation logic
+- Proposal-driven behavioral state transitions
 
 ---
 
