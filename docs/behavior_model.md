@@ -11,7 +11,7 @@ They answer the question:
 
 States are:
 - Slow-changing
-- Pattern-driven
+- Proposal-driven
 - Explainable to the user
 - More important than the numeric score
 - Descriptive indicators, not moral judgments or performance scores.
@@ -24,15 +24,16 @@ A single task can never define a state.
 
 The state system **does not consume raw events**.
 
-It only reacts to **detected patterns**, which are conclusions drawn from signals over time.
+It only reacts to **proposals**, which are conclusions from confirmed patterns.
 
 Patterns summarize:
-- Repetition
-- Severity
-- Consistency
-- Time window
+- Repetition within a window
+- Confirmed polarity (positive / negative)
+- Strength (low / high)
 
-If no pattern exists, the state must not change.
+Escalation, adjacency, and sustained evaluation are handled by the behavior evaluation layer before proposals are generated. This preserves layering.
+
+If no proposal , the state must not change.
 
 Signals may exist without forming a pattern; such signals are recorded but must not affect state.
 
@@ -85,9 +86,9 @@ Disengaged is the worst state, but **never permanent**.
 ## 4. Degradation Rules (State Worsening)
 
 ### Core Rule
-> **States only degrade due to confirmed negative patterns.**
+> **States only degrade due to a Proposal.**
 
-A confirmed pattern means:
+A proposal means:
 - Repetition beyond noise
 - Observed within a rolling window
 - Stronger than a single anomaly
@@ -99,18 +100,19 @@ States degrade **one step at a time**:
 Stable → Drifting → Strained → Disengaged
 ```
 
-A single pattern can only cause **one-step degradation**.
+A Proposal can cause **one-step degradation** or **escalated degradation**.
 
-Multiple patterns confirmed within the same evaluation window are treated as a single degradation decision unless escalation rules apply.
+Escalation rules are determined during behavior evaluation. The state engine only applies the severity level indicated in the proposal.
+
+This keeps the state layer pure.
 
 ---
 
 ### Escalation Exception (Limited)
 
-A state may degrade by **two steps** only if:
-- Pattern severity is high (e.g. repeated missed tasks)
-- Pattern spans multiple tasks or contexts
-- Pattern emerges rapidly in a short window
+A state may degrade by two steps only if the proposal severity is marked as SEVERE.
+
+The criteria for severity are defined in the behavior evaluation layer.
 
 Rules:
 - Stable → Strained is allowed
@@ -124,12 +126,12 @@ Escalation must always be explainable.
 
 ### Core Rule
 > **Recovery requires sustained improvement, not a single good task.**
-> **Recovery uses the same evidence standards as degradation: repetition, consistency, and time.**
+> **Recovery proposals are generated only after sustained improvement is detected by the behavior evaluation layer.**
+> **The state engine applies recovery one step at a time.**
 
-Recovery happens when:
-- No recent confirmed negative patterns exist
-- Positive or neutral behavior persists
-- Improvement is sustained over time
+Recovery occurs when a RECOVERY proposal is received.
+
+The criteria for generating recovery proposals (including sustained improvement detection) are defined in the behavior evaluation layer.
 
 ### Recovery Path
 Recovery always happens **one step at a time**:
@@ -173,9 +175,10 @@ This model guarantees:
 
 ## 8. Governing Principle (Invariant)
 
-> **Events create signals.  
-Signals create patterns.  
-Patterns change state.**
+> **Events create signals.**
+> **Signals create patterns.**
+> **Patterns are interpreted as proposals.**  
+> **Proposals change state.**
 
 Any implementation that violates this is incorrect.
 

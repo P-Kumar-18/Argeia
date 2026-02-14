@@ -1,259 +1,182 @@
 # Behavioral State Transition Tests
 *(Argeia – Procrastination States Tests)*
 
-## Section 1 - No Confirmed Pattern does nothing
+## Section 1 - No Proposal Does Nothing
 
-### Case 1 - Stable with no negative pattern
+### Case 1 - Stable with no proposal of negative kind
 
 Given State: Stable
 
-When: No confirmed current pattern
+When: No proposal of any kind
 
 Then: No state change
 
 ---
 
-### Case 2 - Drifting with no negative/positive pattern
+### Case 2 - Drifting with no proposal of negative kind
 
 Given State: Drifting
 
-When: No confirmed current pattern
+When: No proposal of any kind
 
 Then: No state change
 
 ---
 
-### Case 3 - Strained with no negative/positive pattern
+### Case 3 - Strained with no proposal of negative kind
 
 Given State: Strained
 
-When: No confirmed current pattern
+When: No proposal of any kind
 
 Then: No state change
 
 ---
 
-### Case 4 - Disengaged with no positive pattern
+### Case 4 - Disengaged with no proposal of negative kind
 
 Given State: Disengaged
 
-When: No confirmed current pattern
+When: No proposal of any kind
 
 Then: No state change
 
 ---
 
-## Section 2 - Unconfirmed Pattern or Weak Pattern do nothing
 
-### Case 1 - Stable with an unconfirmed pattern
+## Section 2 - Standard Degradation (one step at a time)
+
+### Case 1 - Stable with a Proposal of NORMAL severity
 
 Given State: Stable
 
-When: Unconfirmed pattern/Weak Pattern
-
-Then: No state change
-
----
-
-### Case 2 - Drifting with an unconfirmed pattern
-
-Given State: Drifting
-
-When: Unconfirmed pattern/Weak Pattern
-
-Then: No state change
-
----
-
-### Case 3 - Strained with an unconfirmed pattern
-
-Given State: Strained
-
-When: Unconfirmed pattern/Weak Pattern
-
-Then: No state change
-
----
-
-### Case 4 - Disengaged with an unconfirmed pattern
-
-Given State: Disengaged
-
-When: Unconfirmed pattern/Weak Pattern
-
-Then: No state change
-
----
-
-## Section 3 - Standard Degradation (one step at a time)
-
-### Case 1 - Stable with a Confirmed Negative Pattern
-
-Given State: Stable
-
-When: Confirmed Negative Pattern
+When: Proposal(kind=DEGRADATION, severity=NORMAL)
 
 Then: Change state to Drifting
 
 ---
 
-### Case 2 - Drifting with a Confirmed Negative Pattern
+### Case 2 - Drifting with a Proposal of NORMAL severity
 
 Given State: Drifting
 
-When: Confirmed Negative Pattern
+When: Proposal(kind=DEGRADATION, severity=NORMAL)
 
 Then: Change state to Strained
 
 ---
 
-### Case 3 - Strained with a Confirmed Negative Pattern
+### Case 3 - Strained with a Proposal of NORMAL severity
 
 Given State: Strained
 
-When: Confirmed Negative Pattern
+When: Proposal(kind=DEGRADATION, severity=NORMAL)
 
 Then: Change state to Disengaged
 
 ---
 
-### Case 4 - Disengaged with a Confirmed Negative Pattern
+### Case 4 - Disengaged with a Proposal of NORMAL severity
 
 Given State: Disengaged
 
-When: Confirmed Negative Pattern
+When: Proposal(kind=DEGRADATION, severity=NORMAL)
 
 Then: No state change
 
 ---
 
-## Section 4 - Escalated Degradation
+## Section 3 - Escalated Degradation
 
-### Case 1 - Stable with Confirmed Severe Degradation Pattern
+### Case 1 - Stable with a Proposal of SEVERE severity
 
 Given State: Stable
 
-When: Confirmed Severe Degradation Pattern
+When: Proposal(kind=DEGRADATION, severity=SEVERE)
 
 Then: Strained
 
 ---
 
-### Case 2 - Drifting with Confirmed Severe Degradation Pattern
+### Case 2 - Drifting with a Proposal of SEVERE severity
 
 Given State: Drifting
 
-When: Confirmed Severe Degradation Pattern
+When: Proposal(kind=DEGRADATION, severity=SEVERE)
 
 Then: Disengaged
 
 ---
 
-### Case 3 - Strained with Confirmed Severe Degradation Pattern
+### Case 3 - Strained with a Proposal of SEVERE severity
 
 Given State: Strained
 
-When: Confirmed Severe Degradation Pattern
+When: Proposal(kind=DEGRADATION, severity=SEVERE)
 
 Then: Disengaged
 
 ---
 
-### Case 4 - Stable with Confirmed Severe Degradation Pattern can never lead to Disengaged
+### Case 4 - Stable with a Proposal of SEVERE severity can never lead to Disengaged
 
 Given State: Stable
 
-When: Confirmed Severe Degradation Pattern
+When: Proposal(kind=DEGRADATION, severity=SEVERE)
 
 Then: State must NOT become Disengaged
 
 ---
 
-## Section 5 - Recovery is Slow and Earned
+## Section 4 - Recovery is Slow and Earned
 
-### Case 1 - Drifting with a single Positive Signal
-
-Given State: Drifting
-
-When: Single Positive Signal
-
-Then: Drifting
-
----
-
-### Case 2 - Disengaged with a Confirmed Positive Pattern
+### Case 1 - Disengaged with a Proposal of RECOVERY kind
 
 Given State: Disengaged
 
-When: Confirmed Positive Pattern
+When: Proposal of RECOVERY kind
 
 Then: Strained
 
 ---
 
-### Case 3 - Strained with a Confirmed Positive Pattern
+### Case 2 - Strained with a Proposal of RECOVERY kind
 
 Given State: Strained
 
-When: Confirmed Positive Pattern
+When: Proposal of RECOVERY kind
 
 Then: Drifting
 
 ---
 
-### Case 4 - Drifting with a Confirmed Positive Pattern
+### Case 3 - Drifting with a Proposal of RECOVERY kind
 
 Given State: Drifting
 
-When: Confirmed Positive Pattern
+When: Proposal of RECOVERY kind
 
 Then: Stable
 
 ---
 
-### Case 5 - Stable with a Confirmed Positive Pattern
+### Case 4 - Stable with a Proposal of RECOVERY kind
 
 Given State: Stable
 
-When: Confirmed Positive Pattern
+When: Proposal of RECOVERY kind
 
 Then: Stable
 
 ---
 
-## Section 6 - Symmetry checks
+## Section 5 - Symmetry checks
 
-### Case 1 - One good task does NOT undo one bad pattern
-
-Given State: Strained
-
-And: A confirmed negative pattern was previously responsible for degradation
-
-When: A single positive signal occurs
-
-Then: State remains Strained
-
----
-
-### Case 2 - If it can degrade, it must block recovery
-
-Given State: Drifting
-
-And: A confirmed negative pattern exists in the current window
-
-When: Positive signals are present
-
-Then: Recovery does NOT occur
-
-And: State remains Drifting
-
----
-
-### Case 3 - Recovery never skips steps
+### Case 1 - Recovery never skips steps
 
 Given State: Disengaged
 
-When: Sustained improvement pattern detected
+When: Proposal of RECOVERY kind
 
 Then: State becomes Strained
 
@@ -261,21 +184,21 @@ And: State does NOT become Drifting or Stable
 
 ---
 
-### Case 4 - Stable cannot over-heal
+### Case 2 - Stable cannot over-heal
 
 Given State: Stable
 
-When: Sustained improvement pattern detected
+When: Proposal of RECOVERY kind
 
 Then: State remains Stable
 
 ---
 
-### Case 5 - State cannot change without a pattern (even positively)
+### Case 3 - State cannot change without a Proposal (even positively)
 
 Given State: Any state
 
-When: No pattern exists (only isolated signals)
+When: No proposal
 
 Then: State remains unchanged
 

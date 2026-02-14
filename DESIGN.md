@@ -42,10 +42,13 @@ Any implementation must follow the rules defined in `docs/behavior_model.md`.
 Argeia models behavior using five layers:
 
 ```
-Events → Signals → Patterns → State → Score
+Events → Signals → Patterns → Behavior Evaluation → State → Score
 ```
 
 Each layer has a **single responsibility**.
+
+Behavior Evaluation interprets pattern evidence across windows and produces a proposal (degradation or recovery) 
+The state engine consumes proposals but does not inspect patterns directly
 
 ---
 
@@ -101,11 +104,29 @@ Patterns are detected across:
 - Early stopping across many tasks
 - Repeated missed tasks
 
-Only patterns can trigger **state transitions**.
+Patterns do not change state directly. They provide evidence that is interpreted by the behavior evaluation layer
 
 ---
 
-## 7. Behavioral States (Primary Feedback)
+## 7. Behavior Evaluation (Interpretation Layer)
+
+Patterns provide behavioral evidence but do not change state directly.
+
+The Behavior Evaluation layer interprets pattern evidence across windows and produces a structured proposal:
+- *DEGREDATION (NORMAL)*
+- *DEGREDATION (SEVERE)*
+- *RECOVERY*
+- no proposal
+
+This layer is responsible for:
+- Escalation logic (e.g., multiple high-severity negatives)
+- Adjacent window evaluation
+- Sustained positive detection
+- Conflict resolution (degradation overrides recovery)
+
+The state engine does not inspect patterns. It only consumes proposals.
+
+## 8. Behavioral States (Primary Feedback)
 
 States represent the system’s interpretation of behavior.
 
@@ -133,13 +154,14 @@ States are **slow-changing** and pattern-driven.
 
 ### State Transition Rules
 - Single events NEVER change state
-- Patterns move state one step at a time
+- Degradation proposals move state one step at a time unless marked severe
 - State skipping allowed ONLY via confirmed escalation patterns
 - Recovery occurs gradually through sustained improvement
+- Recovery proposals move state one step at a time
 
 ---
 
-## 8. Memory Model (Hybrid)
+## 9. Memory Model (Hybrid)
 
 Argeia uses a **hybrid memory system**:
 
@@ -154,7 +176,7 @@ Argeia uses a **hybrid memory system**:
 
 ---
 
-## 9. Score Philosophy
+## 10. Score Philosophy
 
 The procrastination score is **feedback**, not judgment.
 
@@ -171,7 +193,7 @@ The score is secondary to state.
 
 ---
 
-## 10. Score Semantics
+## 11. Score Semantics
 
 - **Zero is attainable**
 - **Zero is fragile**
@@ -185,7 +207,7 @@ Sustained consistency allows zero to be regained.
 
 ---
 
-## 11. "Good Enough" Behavior
+## 12. "Good Enough" Behavior
 
 Argeia distinguishes between:
 
@@ -201,7 +223,7 @@ Consistent "good enough" behavior can escalate into drifting.
 
 ---
 
-## 12. Severity Hierarchy
+## 13. Severity Hierarchy
 
 From least severe to most severe:
 
@@ -215,7 +237,7 @@ Severity influences:
 
 ---
 
-## 13. Recovery Rules
+## 14. Recovery Rules
 
 Recovery:
 - Is always possible
@@ -227,7 +249,7 @@ Recovery moves states **one step at a time**.
 
 ---
 
-## 14. Design Guarantees
+## 15. Design Guarantees
 
 This system guarantees:
 
@@ -238,7 +260,7 @@ This system guarantees:
 
 ---
 
-## 15. Intentional Omissions
+## 16. Intentional Omissions
 
 This document intentionally avoids:
 - Mathematical formulas
@@ -249,15 +271,15 @@ These are left flexible to allow iteration without breaking meaning.
 
 ---
 
-## 16. Guiding Principle (Single Source of Truth)
+## 17. Guiding Principle (Single Source of Truth)
 
-> **Events do not change state. Patterns change state.**
+> **Events do not change state. Pattern evidence is interpreted into proposals. Proposals change state.**
 
 This rule governs the entire system.
 
 ---
 
-## 17. Future Extensions (Non-Binding)
+## 18. Future Extensions (Non-Binding)
 
 Potential future additions:
 - Per-task state overlays
