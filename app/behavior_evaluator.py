@@ -57,6 +57,8 @@ def evaluate_behavior(
                 continue
         
             if pattern["strength"] == Pattern_strength_type.LOW:
+                if possible_degradation_flag:
+                    possible_severe_flag = True
                 possible_degradation_flag = True
                 continue
         else:
@@ -71,18 +73,19 @@ def evaluate_behavior(
     
     # Low strenth pattern in adjacent windows
     if possible_degradation_flag:
-        previous_window = previous_windows[-1]
+        if previous_windows != None:
+            previous_window = previous_windows[-1]
 
-        for pattern in previous_window:
-            if (
-                pattern["polarity"] == Pattern_polarity_type.NEGATIVE
-                and pattern["strength"] == Pattern_strength_type.LOW
-                and pattern["confirmed"] is True
-            ):
-                return {
-                    "kind": Proposal_kind.DEGRADATION,
-                    "severity": Proposal_severity.NORMAL
-                }
+            for pattern in previous_window:
+                if (
+                    pattern["polarity"] == Pattern_polarity_type.NEGATIVE
+                    and pattern["strength"] == Pattern_strength_type.LOW
+                    and pattern["confirmed"] is True
+                ):
+                    return {
+                        "kind": Proposal_kind.DEGRADATION,
+                        "severity": Proposal_severity.NORMAL
+                    }
     
     if possible_severe_flag or possible_degradation_flag:
         possible_recovery_flag = False
@@ -90,7 +93,7 @@ def evaluate_behavior(
     # Recovery
     if possible_recovery_flag:
 
-        if detect_sustained_pattern(previous_windows):
+        if previous_windows and detect_sustained_pattern(previous_windows):
             return {
                 "kind": Proposal_kind.RECOVERY,
                 "severity": Proposal_severity.NORMAL
