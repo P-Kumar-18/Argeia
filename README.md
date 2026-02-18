@@ -68,7 +68,7 @@ Positive patterns require sustained confirmation across windows before recovery 
 
 Argeia models procrastination as a progression of behavioral layers:
 
-Events → Signals → Patterns → Behavior Evaluation → State Engine → Score
+Events → Signals → Patterns → Behavior Evaluation → State Engine → Transition Events
 
 - **Signals** measure raw deviations from planned behavior.
 - **Patterns** interpret signals over time to detect consistent trends.
@@ -79,6 +79,14 @@ This design prevents overreacting to one-off mistakes or short-term improvements
 
 The behavior evaluation layer resolves conflicts (e.g., simultaneous positive and negative evidence) before proposals reach the state engine.
 The state engine does not inspect patterns directly.
+
+State transitions emit structured Transition events capturing:
+- previous state
+- new state
+- proposal kind and severity
+- structured evidence summary
+- timestamp
+These events form a complete behavioral history and enable explainability without coupling persistence to the state engine.
 
 ---
 
@@ -163,7 +171,7 @@ Implemented:
 - Task domain model
 - Procrastination signal extraction
 - Pattern detection and behavioral evaluation logic
-- Proposal-driven behavioral state transitions
+- Proposal-driven behavioral state transitions with structured transition emission for explainability
 
 ---
 

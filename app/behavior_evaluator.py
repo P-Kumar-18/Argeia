@@ -11,6 +11,18 @@ class Proposal_kind(Enum):
     RECOVERY = "recovery"
 
 
+class Proposal_windows_scope(Enum):
+    SINGLE_WINDOW = "single_window"
+    MULTI_WINDOW = "multi_window"
+
+
+class Proposal:
+    def __init__(self, kind = None, severity = None, evidence_reason = None):
+        self.kind = kind
+        self.severity = severity
+        self.evidence_reason = evidence_reason
+
+
 def detect_sustained_pattern(windows: list, required_windows: int = 3):
     if len(windows) < required_windows - 1:
         return False
@@ -40,6 +52,8 @@ def evaluate_behavior(
     possible_severe_flag = False
     possible_degradation_flag = False
     possible_recovery_flag = False
+    high = 0
+    low = 0
 
     for pattern in current_window:
         if pattern["confirmed"] == False:
@@ -49,14 +63,23 @@ def evaluate_behavior(
             if pattern["strength"] == Pattern_strength_type.HIGH:
                 # Multiple high strength pattern
                 if possible_severe_flag:
-                    return {
-                        "kind": Proposal_kind.DEGRADATION,
-                        "severity": Proposal_severity.SEVERE
-                    }
+                    propsoal = Proposal(
+                        Proposal_kind.DEGRADATION,
+                        Proposal_severity.SEVERE,
+                        {
+                            "high_count": high,
+                            "low_count": low,
+                            "windows_scope": Proposal_windows_scope.SINGLE_WINDOW,
+                            "sustained_trigger": False
+                        }
+                    )
+                    return propsoal
+                high += 1
                 possible_severe_flag = True
                 continue
         
             if pattern["strength"] == Pattern_strength_type.LOW:
+                low += 1
                 if possible_degradation_flag:
                     possible_severe_flag = True
                 possible_degradation_flag = True
@@ -66,10 +89,17 @@ def evaluate_behavior(
 
     # Single high strength pattern
     if possible_severe_flag:
-        return {
-            "kind": Proposal_kind.DEGRADATION,
-            "severity": Proposal_severity.NORMAL
-        }
+        propsoal = Proposal(
+            Proposal_kind.DEGRADATION,
+            Proposal_severity.NORMAL,
+            {
+                "high_count": high,
+                "low_count": low,
+                "windows_scope": Proposal_windows_scope.SINGLE_WINDOW,
+                "sustained_trigger": False
+            }
+        )
+        return propsoal
     
     # Low strenth pattern in adjacent windows
     if possible_degradation_flag:
@@ -82,10 +112,17 @@ def evaluate_behavior(
                     and pattern["strength"] == Pattern_strength_type.LOW
                     and pattern["confirmed"] is True
                 ):
-                    return {
-                        "kind": Proposal_kind.DEGRADATION,
-                        "severity": Proposal_severity.NORMAL
-                    }
+                    propsoal = Proposal(
+                        Proposal_kind.DEGRADATION,
+                        Proposal_severity.NORMAL,
+                        {
+                            "high_count": high,
+                            "low_count": low,
+                            "windows_scope": Proposal_windows_scope.MULTI_WINDOW,
+                            "sustained_trigger": False
+                        }
+                    )
+                    return propsoal
     
     if possible_severe_flag or possible_degradation_flag:
         possible_recovery_flag = False
@@ -94,12 +131,16 @@ def evaluate_behavior(
     if possible_recovery_flag:
 
         if previous_windows and detect_sustained_pattern(previous_windows):
-            return {
-                "kind": Proposal_kind.RECOVERY,
-                "severity": Proposal_severity.NORMAL
-            }
+            propsoal = Proposal(
+                Proposal_kind.RECOVERY,
+                Proposal_severity.NORMAL,
+                {
+                    "high_count": high,
+                    "low_count": low,
+                    "windows_scope": Proposal_windows_scope.MULTI_WINDOW,
+                    "sustained_trigger": True
+                }
+            )
+            return propsoal
     
-    return {
-        "kind": None,
-        "severity": None
-    }
+    return None

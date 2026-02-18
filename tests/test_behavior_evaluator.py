@@ -15,8 +15,8 @@ def test_negative_pattern_priority_over_positive_sustained():
         current_window=window_3
     )
 
-    assert proposal["kind"] == Proposal_kind.DEGRADATION
-    assert proposal["severity"] == Proposal_severity.SEVERE
+    assert proposal.kind == Proposal_kind.DEGRADATION
+    assert proposal.severity == Proposal_severity.SEVERE
 
 def test_adjacent_low_negatives_trigger_degradation():
     previous_windows = [
@@ -32,8 +32,8 @@ def test_adjacent_low_negatives_trigger_degradation():
         current_window=current_window
     )
 
-    assert proposal["kind"] == Proposal_kind.DEGRADATION
-    assert proposal["severity"] == Proposal_severity.NORMAL
+    assert proposal.kind == Proposal_kind.DEGRADATION
+    assert proposal.severity == Proposal_severity.NORMAL
 
 
 def test_single_high_negative_triggers_degradation():
@@ -45,8 +45,8 @@ def test_single_high_negative_triggers_degradation():
         current_window=current_window
     )
 
-    assert proposal["kind"] == Proposal_kind.DEGRADATION
-    assert proposal["severity"] == Proposal_severity.NORMAL
+    assert proposal.kind == Proposal_kind.DEGRADATION
+    assert proposal.severity == Proposal_severity.NORMAL
 
 
 def test_multiple_high_negatives_in_same_window_trigger_severe():
@@ -59,8 +59,8 @@ def test_multiple_high_negatives_in_same_window_trigger_severe():
         current_window=current_window,
     )
 
-    assert proposal["kind"] == Proposal_kind.DEGRADATION
-    assert proposal["severity"] == Proposal_severity.SEVERE
+    assert proposal.kind == Proposal_kind.DEGRADATION
+    assert proposal.severity == Proposal_severity.SEVERE
 
 
 def test_three_consecutive_positive_windows_trigger_recovery():
@@ -73,5 +73,5 @@ def test_three_consecutive_positive_windows_trigger_recovery():
         current_window=window_3
     )
 
-    assert proposal["kind"] == Proposal_kind.RECOVERY
-    assert proposal["severity"] == Proposal_severity.NORMAL
+    assert proposal.kind == Proposal_kind.RECOVERY
+    assert proposal.severity == Proposal_severity.NORMAL

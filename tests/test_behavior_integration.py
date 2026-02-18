@@ -18,7 +18,7 @@ def test_high_negative_degrade_once():
 
     proposal = evaluate_behavior(window_1)
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.DRIFTING
 
@@ -40,7 +40,7 @@ def test_two_consecutive_low_negatives_degrade_once():
 
     proposal = evaluate_behavior(window_1)
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.STABLE
 
@@ -55,7 +55,7 @@ def test_two_consecutive_low_negatives_degrade_once():
 
     proposal = evaluate_behavior(window_2, [window_1])
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.DRIFTING
 
@@ -74,7 +74,7 @@ def test_low_clean_low_does_not_degrade():
 
     proposal = evaluate_behavior(window_1)
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.STABLE
 
@@ -88,7 +88,7 @@ def test_low_clean_low_does_not_degrade():
 
     proposal = evaluate_behavior(window_2, [window_1])
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.STABLE
 
@@ -103,7 +103,7 @@ def test_low_clean_low_does_not_degrade():
 
     proposal = evaluate_behavior(window_3, [window_1, window_2])
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.STABLE
 
@@ -125,7 +125,7 @@ def test_two_low_in_same_window_degrade_once():
     ]
 
     proposal = evaluate_behavior(window)
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.DRIFTING
 
@@ -147,7 +147,7 @@ def test_high_and_low_same_window_degrade_normally():
     ]
 
     proposal = evaluate_behavior(window)
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.DRIFTING
 
@@ -173,7 +173,7 @@ def test_repeated_high_negative_cause_severe_degredation():
 
     proposal = evaluate_behavior(window_1)
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.STRAINED
 
@@ -196,7 +196,7 @@ def test_severe_degredation_from_strained():
 
     proposal = evaluate_behavior(window_1)
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.DISENGAGED
 
@@ -218,7 +218,7 @@ def test_severe_from_stable_does_not_skip_two_levels():
     ]
 
     proposal = evaluate_behavior(window)
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state != State.DISENGAGED
 
@@ -240,7 +240,7 @@ def test_consecutive_high_degrade_stepwise():
 
     proposal = evaluate_behavior(window_1)
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.DRIFTING
 
@@ -261,7 +261,7 @@ def test_consecutive_high_degrade_stepwise():
 
     proposal = evaluate_behavior(window_2, [window_1])
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.STRAINED
 
@@ -281,7 +281,7 @@ def test_consecutive_high_degrade_stepwise():
 
     proposal = evaluate_behavior(window_3, [window_1, window_2])
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.DISENGAGED
 
@@ -318,7 +318,7 @@ def test_three_consecutive_possitive_windows_recover():
 
     proposal = evaluate_behavior(window_3, [window_1, window_2])
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.STABLE
 
@@ -352,7 +352,7 @@ def test_recovery_does_nothing_if_the_state_is_stable():
 
     proposal = evaluate_behavior(window_3, [window_1, window_2])
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.STABLE
 
@@ -394,7 +394,7 @@ def test_negative_breaks_possitive_streak():
 
     proposal = evaluate_behavior(window_3, [window_1, window_2])
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.DRIFTING
 
@@ -438,7 +438,7 @@ def test_severe_over_recovery():
 
     proposal = evaluate_behavior(window_3, [window_1, window_2])
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.DISENGAGED
 
@@ -453,6 +453,6 @@ def test_no_proposal_does_nothing():
 
     proposal = evaluate_behavior(window_1)
 
-    state = apply_proposal(state, proposal)
+    state, transition = apply_proposal(state, proposal)
 
     assert state == State.DRIFTING
