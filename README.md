@@ -34,6 +34,9 @@ This project is being developed incrementally with a strong emphasis on **clean 
 - Asymmetric behavior model:
   - degradation can occur quickly
   - recovery requires sustained improvement
+- Structured Transition events emitted on state change
+- Persistent transition history stored via SQLite
+- Application runner coordinating state engine and persistence
 - Comprehensive unit tests covering signals, patterns, and state transitions
 
 ---
@@ -68,7 +71,7 @@ Positive patterns require sustained confirmation across windows before recovery 
 
 Argeia models procrastination as a progression of behavioral layers:
 
-Events → Signals → Patterns → Behavior Evaluation → State Engine → Transition Events
+Events → Signals → Patterns → Behavior Evaluation → State Engine → Transition Events → Persistence
 
 - **Signals** measure raw deviations from planned behavior.
 - **Patterns** interpret signals over time to detect consistent trends.
@@ -95,28 +98,36 @@ These events form a complete behavioral history and enable explainability withou
 ```
 argeia/
 ├── app/
+│   ├── infrastructure/
+│   │   ├── database.py               # Database integration
+│   │   ├── transition_repository.py  # Saving transition history
 │   ├── __init__.py                   # Flask app factory
-│   ├── main.py                       # Application entry point
-│   ├── routes.py                     # Web routes
-│   ├── tracker.py                    # Core task & procrastination logic
-│   ├── signals.py                    # Analytical signal extraction
-│   ├── pattern_detection.py          # Pattern detection
 │   ├── behavior_evaluator.py         # Behavior evaluator and state integration
-│   └── state_engine.py               # Behavioral state transition engine
-├── tests/
-│   ├── test_behavior_evaluator.py    # Tests for Behavior Evaluator
-│   ├── test_task.py                  # Tests for Task behavior
-│   ├── test_signals.py               # Tests for signal extraction
-│   ├── test_pattern_detection.py     # Tests for pattern detection
-│   └── test_state_transitions.py     # Tests for behavioral state transitions
-├── requirements.txt
-├── .gitignore
-├── DESIGN.md                         # High-level system design
+│   ├── behavior_runner.py            # Application layer coordinating state engine and persistence
+│   ├── main.py                       # Application entry point
+│   ├── pattern_detection.py          # Pattern detection
+│   ├── routes.py                     # Web routes
+│   ├── signals.py                    # Analytical signal extraction
+│   ├── state_engine.py               # Behavioral state transition engine 
+│   └── tracker.py                    # Core task & procrastination logic
+├── data/
+│   ├── argeia.db                     # Main database of Argeia
 ├── docs/
 │   ├── behavior_model.md             # Procrastination behavior & state model
 │   ├── pattern_model.md              # Patterns model
 │   └── state_transition_tests.md     # State tests model
-└── README.md
+├── tests/
+│   ├── test_behavior_evaluator.py    # Tests for Behavior Evaluator
+│   ├── test_behavior_integration.py  # Tests for Behavior Integration 
+│   ├── test_behavior_runner.py       # Test for Behavior Runner
+│   ├── test_pattern_detection.py     # Tests for pattern  
+│   ├── test_signals.py               # Tests for signal extraction
+│   ├── test_state_transitions.py     # Tests for behavioral state transitions
+│   └── test_task.py                  # Tests for Task behavior
+├── .gitignore
+├── DESIGN.md                         # High-level system design
+├── README.md 
+└── requirements.txt
 ```
 
 ---
@@ -165,7 +176,7 @@ All tests should pass.
 
 ## 🎯 Project Status
 
-The behavioral core of Argeia is complete and fully tested.
+The behavioral core is complete, emits structured transition events, and persists behavioral history via SQLite.
 
 Implemented:
 - Task domain model
