@@ -1,20 +1,26 @@
-from app.behavior_runnner import BehaviorRunner
+from app.behavior_runner import BehaviorRunner
 from app.behavior_evaluator import Proposal, Proposal_kind, Proposal_severity
 from app.state_engine import State
 
 class FakeRepository:
     def __init__(self):
         self.saved = []
+        self.latest = None
+
 
     def save(self, transition):
         self.saved.append(transition)
+    
+
+    def get_latest(self):
+        return self.latest
 
 
 def test_no_proposal_does_not_change_state_or_save():
     repo = FakeRepository()
     runner = BehaviorRunner(repository=repo)
 
-    new_state = runner.process(None)
+    new_state = runner.process_proposal(None)
 
     assert new_state == State.STABLE
     assert len(repo.saved) == 0
@@ -30,7 +36,7 @@ def test_degradation_proposal_triggers_transition_and_save():
         evidence_reason="consecutive_negative_confirmed"
     )
 
-    new_state = runner.process(proposal)
+    new_state = runner.process_proposal(proposal)
 
     assert new_state == State.DRIFTING
     assert len(repo.saved) == 1
@@ -50,7 +56,7 @@ def test_no_transition_no_save():
         evidence_reason="continued_negative"
     )
 
-    new_state = runner.process(proposal)
+    new_state = runner.process_proposal(proposal)
 
     assert new_state == State.DISENGAGED
     assert len(repo.saved) == 0

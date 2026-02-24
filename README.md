@@ -34,8 +34,9 @@ This project is being developed incrementally with a strong emphasis on **clean 
 - Asymmetric behavior model:
   - degradation can occur quickly
   - recovery requires sustained improvement
-- Structured Transition events emitted on state change
+- Structured Transition events emitted on accepted state changes
 - Persistent transition history stored via SQLite
+- State reconstruction on startup using latest persisted transition
 - Application runner coordinating state engine and persistence
 - Comprehensive unit tests covering signals, patterns, and state transitions
 
@@ -71,7 +72,7 @@ Positive patterns require sustained confirmation across windows before recovery 
 
 Argeia models procrastination as a progression of behavioral layers:
 
-Events → Signals → Patterns → Behavior Evaluation → State Engine → Transition Events → Persistence
+Events → Signals → Patterns → Behavior Evaluation → State Engine → Transition Events → Persistence → State Reconstruction
 
 - **Signals** measure raw deviations from planned behavior.
 - **Patterns** interpret signals over time to detect consistent trends.
@@ -121,6 +122,7 @@ argeia/
 │   ├── test_behavior_integration.py  # Tests for Behavior Integration 
 │   ├── test_behavior_runner.py       # Test for Behavior Runner
 │   ├── test_pattern_detection.py     # Tests for pattern  
+│   ├── test_runner_restart.py        # Tests for persistence on restart
 │   ├── test_signals.py               # Tests for signal extraction
 │   ├── test_state_transitions.py     # Tests for behavioral state transitions
 │   └── test_task.py                  # Tests for Task behavior
@@ -176,7 +178,7 @@ All tests should pass.
 
 ## 🎯 Project Status
 
-The behavioral core is complete, emits structured transition events, and persists behavioral history via SQLite.
+The behavioral core is complete, emits structured transition events, persists behavioral history via SQLite, and reconstructs state on restart.
 
 Implemented:
 - Task domain model

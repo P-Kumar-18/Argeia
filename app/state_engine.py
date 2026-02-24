@@ -11,13 +11,13 @@ class State(Enum):
 
 
 class Transition:
-    def __init__(self, previous_state: State, current_state: State, proposal: Proposal):
+    def __init__(self, previous_state: State, current_state: State, proposal: Proposal, timestamp = None):
         self.previous_state = previous_state
         self.current_state = current_state
         self.proposal_kind = proposal.kind
         self.proposal_severity = proposal.severity
         self.evidence_reason = proposal.evidence_reason
-        self.timestamp = datetime.now()
+        self.timestamp = timestamp or datetime.now()
 
 
 # State Engine
