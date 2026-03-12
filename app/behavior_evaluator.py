@@ -63,7 +63,7 @@ def evaluate_behavior(
             if pattern["strength"] == Pattern_strength_type.HIGH:
                 # Multiple high strength pattern
                 if possible_severe_flag:
-                    propsoal = Proposal(
+                    proposal = Proposal(
                         Proposal_kind.DEGRADATION,
                         Proposal_severity.SEVERE,
                         {
@@ -73,7 +73,7 @@ def evaluate_behavior(
                             "sustained_trigger": False
                         }
                     )
-                    return propsoal
+                    return proposal
                 high += 1
                 possible_severe_flag = True
                 continue
@@ -89,7 +89,7 @@ def evaluate_behavior(
 
     # Single high strength pattern
     if possible_severe_flag:
-        propsoal = Proposal(
+        proposal = Proposal(
             Proposal_kind.DEGRADATION,
             Proposal_severity.NORMAL,
             {
@@ -99,7 +99,7 @@ def evaluate_behavior(
                 "sustained_trigger": False
             }
         )
-        return propsoal
+        return proposal
     
     # Low strenth pattern in adjacent windows
     if possible_degradation_flag:
@@ -112,7 +112,7 @@ def evaluate_behavior(
                     and pattern["strength"] == Pattern_strength_type.LOW
                     and pattern["confirmed"] is True
                 ):
-                    propsoal = Proposal(
+                    proposal = Proposal(
                         Proposal_kind.DEGRADATION,
                         Proposal_severity.NORMAL,
                         {
@@ -122,7 +122,7 @@ def evaluate_behavior(
                             "sustained_trigger": False
                         }
                     )
-                    return propsoal
+                    return proposal
     
     if possible_severe_flag or possible_degradation_flag:
         possible_recovery_flag = False
@@ -131,7 +131,7 @@ def evaluate_behavior(
     if possible_recovery_flag:
 
         if previous_windows and detect_sustained_pattern(previous_windows):
-            propsoal = Proposal(
+            proposal = Proposal(
                 Proposal_kind.RECOVERY,
                 Proposal_severity.NORMAL,
                 {
@@ -141,6 +141,6 @@ def evaluate_behavior(
                     "sustained_trigger": True
                 }
             )
-            return propsoal
+            return proposal
     
     return None

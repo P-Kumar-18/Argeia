@@ -6,65 +6,61 @@ Instead of only tracking *what* needs to be done, Argeia models:
 - when tasks were planned
 - when they were actually started
 - how long they were worked on
-- and where procrastination occurs (late start, no start, early stop)
+- where procrastination occurs — late start, early stop, or no start at all
 
 This project is being developed incrementally with a strong emphasis on **clean architecture, testability, and real-world design practices**.
 
 ---
 
 ## 🚀 Current Features
+
 - Define tasks with planned start and end times
-- Track actual task execution (start / completion)
+- Track actual task execution — start and completion
 - Detect procrastination signals:
   - start delay
   - underwork
   - timeout
-- Analytical signal layer exposing absolute deviations
+- Analytical signal layer exposing absolute deviations from planned behavior
 - Pattern detection layer that interprets repeated signals over time:
   - window-level confirmation
-  - pattern polarity (positive / negative)
-  - pattern strength (low / high)
+  - pattern polarity — positive or negative
+  - pattern strength — low or high
+- Weekly time windows that bound signal accumulation and pattern detection
+- Intra-window pattern batching evaluated every 5 tasks
+- Window lifecycle management with automatic closing and reopening
 - Behavior evaluation layer that:
-  - derives sustained improvement across windows
+  - detects sustained improvement across windows
   - determines degradation severity
+  - resolves conflicts between positive and negative evidence
   - produces structured proposals for the state engine
-- Behavioral state engine modeling long-term engagement:
-  - Stable → Drifting → Strained → Disengaged
-- Behavior evaluator that integrates patterns with the state engine
 - Asymmetric behavior model:
   - degradation can occur quickly
-  - recovery requires sustained improvement
+  - recovery requires sustained improvement across multiple windows
+- Behavioral state engine modeling long-term engagement:
+  - Stable → Drifting → Strained → Disengaged
 - Structured Transition events emitted on accepted state changes
-- Persistent transition history stored via SQLite
-- State reconstruction on startup using latest persisted transition
-- Application runner coordinating state engine and persistence
-- Comprehensive unit tests covering signals, patterns, and state transitions
+- Persistent history for transitions, windows, and signals via SQLite
+- Full state and window reconstruction on startup
 
 ---
 
 ## 🧪 Procrastination Model
 
-Argeia currently identifies procrastination through three independent signals:
+Argeia identifies procrastination through three independent signals:
 
 - **Start Delay** — starting later than scheduled
 - **Timeout** — never starting after the planned window ends
-- **Underwork** — completing a task earlier than planned
+- **Underwork** — stopping a task earlier than planned
 
-Signals are treated as factual measurements and do not encode severity or judgment.
-
-Each signal is isolated, testable, and designed to be combined later into higher-level insights.
-
-These signals are evaluated over time and combined into higher-level behavioral patterns.
-Pattern evidence is interpreted by the behavior evaluation layer, which produces structured proposals (degradation or recovery) for the state engine.
-
-State transitions are intentionally slow-moving and proposal-driven, designed to be fair to one-off mistakes..
+Signals are treated as factual measurements and do not encode severity or judgment. Each signal is isolated, testable, and feeds into higher-level pattern detection.
 
 Patterns are detected at two levels:
-- window-level patterns identify consistent behavior within a bounded set of tasks
-- sustained patterns evaluate improvement consistency across multiple windows
+- **Window-level patterns** identify consistent behavior within a bounded set of tasks
+- **Sustained patterns** evaluate consistency across multiple windows
 
-Confirmed negative patterns may influence state degradation.
-Positive patterns require sustained confirmation across windows before recovery is allowed, ensuring recovery is intentionally slower than degradation.
+Confirmed negative patterns may trigger degradation proposals. Positive patterns require sustained confirmation across windows before a recovery proposal is issued — ensuring recovery is intentionally slower than degradation.
+
+Pattern evidence is interpreted by the behavior evaluation layer, which resolves any conflicts before producing structured proposals for the state engine. State transitions are proposal-driven and intentionally conservative, designed to be fair to one-off mistakes.
 
 ---
 
@@ -72,24 +68,28 @@ Positive patterns require sustained confirmation across windows before recovery 
 
 Argeia models procrastination as a progression of behavioral layers:
 
-Events → Signals → Patterns → Behavior Evaluation → State Engine → Transition Events → Persistence → State Reconstruction
+```
+Events → Signals → Windows → Pattern Batching → Patterns → Behavior Evaluation → State Engine → Transition Events → Persistence → State Reconstruction
+```
 
-- **Signals** measure raw deviations from planned behavior.
-- **Patterns** interpret signals over time to detect consistent trends.
-- **States** represent long-term engagement and are updated conservatively.
+- **Signals** measure raw deviations from planned behavior
+- **Windows** bound signal accumulation over weekly periods
+- **Pattern Batching** detects patterns incrementally every 5 tasks within a window
+- **Patterns** interpret accumulated signals to identify consistent behavioral trends
+- **Behavior Evaluation** resolves evidence conflicts and produces structured proposals
+- **State Engine** updates long-term engagement state conservatively based on proposals
+- **Transition Events** capture each state change with full evidence for explainability
+- **Persistence** stores transitions, windows, and signals to SQLite
+- **State Reconstruction** restores the full behavioral context on restart
 
-Degradation proposals may move state quickly, while recovery proposals always move state one step at a time and require sustained positive behavior.
-This design prevents overreacting to one-off mistakes or short-term improvements.
-
-The behavior evaluation layer resolves conflicts (e.g., simultaneous positive and negative evidence) before proposals reach the state engine.
-The state engine does not inspect patterns directly.
+The state engine does not inspect patterns directly — it only acts on proposals. This keeps each layer independently testable and decoupled.
 
 State transitions emit structured Transition events capturing:
-- previous state
-- new state
+- previous and new state
 - proposal kind and severity
 - structured evidence summary
 - timestamp
+
 These events form a complete behavioral history and enable explainability without coupling persistence to the state engine.
 
 ---
@@ -100,35 +100,39 @@ These events form a complete behavioral history and enable explainability withou
 argeia/
 ├── app/
 │   ├── infrastructure/
-│   │   ├── database.py               # Database integration
-│   │   ├── transition_repository.py  # Saving transition history
-│   ├── __init__.py                   # Flask app factory
-│   ├── behavior_evaluator.py         # Behavior evaluator and state integration
-│   ├── behavior_runner.py            # Application layer coordinating state engine and persistence
-│   ├── main.py                       # Application entry point
-│   ├── pattern_detection.py          # Pattern detection
-│   ├── routes.py                     # Web routes
-│   ├── signals.py                    # Analytical signal extraction
-│   ├── state_engine.py               # Behavioral state transition engine 
-│   └── tracker.py                    # Core task & procrastination logic
+│   │   ├── database.py                 # SQLite connection and schema initialization
+│   │   ├── transition_repository.py    # Transition history persistence
+│   │   └── window_repository.py        # Window and signal persistence
+│   ├── __init__.py                     # Flask app factory
+│   ├── behavior_evaluator.py           # Evidence interpretation and proposal generation
+│   ├── behavior_runner.py              # Application layer coordinating state engine and persistence
+│   ├── main.py                         # Application entry point
+│   ├── pattern_detection.py            # Signal interpretation and pattern detection
+│   ├── routes.py                       # Web routes
+│   ├── signals.py                      # Procrastination signal extraction
+│   ├── state_engine.py                 # Behavioral state transition engine
+│   ├── tracker.py                      # Core task and procrastination logic
+│   ├── window.py                       # Window model and status definitions
+│   └── window_manager.py               # Window lifecycle and pattern batching
 ├── data/
-│   ├── argeia.db                     # Main database of Argeia
+│   └── argeia.db                       # SQLite database
 ├── docs/
-│   ├── behavior_model.md             # Procrastination behavior & state model
-│   ├── pattern_model.md              # Patterns model
-│   └── state_transition_tests.md     # State tests model
+│   ├── behavior_model.md               # Procrastination behavior and state model
+│   ├── pattern_model.md                # Pattern detection model
+│   └── state_transition_tests.md       # State transition test reference
 ├── tests/
-│   ├── test_behavior_evaluator.py    # Tests for Behavior Evaluator
-│   ├── test_behavior_integration.py  # Tests for Behavior Integration 
-│   ├── test_behavior_runner.py       # Test for Behavior Runner
-│   ├── test_pattern_detection.py     # Tests for pattern  
-│   ├── test_runner_restart.py        # Tests for persistence on restart
-│   ├── test_signals.py               # Tests for signal extraction
-│   ├── test_state_transitions.py     # Tests for behavioral state transitions
-│   └── test_task.py                  # Tests for Task behavior
+│   ├── test_behavior_evaluator.py      # Tests for behavior evaluation
+│   ├── test_behavior_integration.py    # Integration tests for behavior and state engine
+│   ├── test_behavior_runner.py         # Tests for the application runner
+│   ├── test_pattern_detection.py       # Tests for pattern detection
+│   ├── test_runner_restart.py          # Tests for state reconstruction on restart
+│   ├── test_signals.py                 # Tests for signal extraction
+│   ├── test_state_transitions.py       # Tests for behavioral state transitions
+│   ├── test_task.py                    # Tests for task behavior
+│   └── test_windows_implementation.py  # Tests for Window and WindowManager
 ├── .gitignore
-├── DESIGN.md                         # High-level system design
-├── README.md 
+├── DESIGN.md                           # High-level system design
+├── README.md
 └── requirements.txt
 ```
 
@@ -158,7 +162,7 @@ pip install -r requirements.txt
 python app/main.py
 ```
 
-### 5. Tests
+### 5. Run tests
 ```bash
 python -m pytest
 ```
@@ -168,25 +172,31 @@ All tests should pass.
 ---
 
 ## 📚 Tech Stack
+
 - Python
-- Pytest (testing)
-- Flask (app setup in progress)
-- SQLite (planned)
+- Pytest
+- Flask (in progress)
+- SQLite
 - HTML / CSS (planned)
 
 ---
 
 ## 🎯 Project Status
 
-The behavioral core is complete, emits structured transition events, persists behavioral history via SQLite, and reconstructs state on restart.
+The behavioral core is complete. Argeia detects procrastination signals, evaluates behavioral patterns across time windows, drives state transitions through structured proposals, and persists full behavioral history to SQLite with complete reconstruction on restart.
 
-Implemented:
-- Task domain model
-- Procrastination signal extraction
-- Pattern detection and behavioral evaluation logic
-- Proposal-driven behavioral state transitions with structured transition emission for explainability
+**Implemented:**
+- Task domain model with procrastination signal extraction
+- Weekly window lifecycle with automatic open/close and restart recovery
+- Intra-window pattern batching and signal accumulation
+- Pattern detection with polarity and strength classification
+- Proposal-driven behavioral state transitions
+- Structured transition events for full behavioral explainability
+- Persistent storage for transitions, windows, and signals
+- Comprehensive unit and integration tests
 
 ---
 
 ## 📝 License
+
 This project is for educational purposes.

@@ -1,4 +1,5 @@
 from enum import Enum
+from app.signals import Signal
 
 # NOTE: strength thresholds are provisional and subject to tuning
 
@@ -9,19 +10,13 @@ class Pattern_polarity_type(Enum):
 class Pattern_strength_type(Enum):
     LOW = "low"
     HIGH = "high"
+    NONE = "none"
 
 
-def compute_signals(signals: list)-> list:
+def compute_signals(signals: list[Signal])-> list:
     normalized_time = []
     for signal in signals:
-        if "delay_time" in signal:
-            normalized_time.append(int((signal["delay_time"] / signal["planned_duration"]) * 100))
-        elif "timeout_time" in signal:
-            normalized_time.append(int((signal["timeout_time"] / signal["planned_duration"]) * 100))
-        elif "underwork_time" in signal:
-            normalized_time.append(int((signal["underwork_time"] / signal["planned_duration"]) * 100))
-        else:
-            raise ValueError("Unknown signal type")
+        normalized_time.append(int((signal.time / signal.planned_duration) * 100))
     
     return normalized_time
 
@@ -106,5 +101,5 @@ def detect_pattern(signals: list):
         return {
             "confirmed": confirmed,
             "polarity": Pattern_polarity_type.POSITIVE,
-            "strength": None
+            "strength": Pattern_strength_type.NONE
         }             
