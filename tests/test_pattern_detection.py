@@ -1,11 +1,9 @@
 from app.pattern_detection import detect_pattern, Pattern_polarity_type, Pattern_strength_type
+from app.signals import Signal, Signal_type
 
 def test_single_delay_creates_unconfirmed_negative_pattern():
     signals = [
-        {
-            "delay_time": 5,
-            "planned_duration": 120
-        }
+        Signal(signal_type=Signal_type.DELAY, time=5, planned_duration=120)
     ]
 
     pattern = detect_pattern(signals)
@@ -16,8 +14,8 @@ def test_single_delay_creates_unconfirmed_negative_pattern():
 
 def test_mixed_signals_do_not_confirm_pattern():
     signals = [
-        {"delay_time": 30, "planned_duration": 120},
-        {"delay_time": 0, "planned_duration": 120}
+        Signal(signal_type=Signal_type.DELAY, time=30, planned_duration=120),
+        Signal(signal_type=Signal_type.NONE, time=0, planned_duration=120)
     ]
 
     pattern = detect_pattern(signals)
@@ -28,10 +26,10 @@ def test_mixed_signals_do_not_confirm_pattern():
 
 def test_repeated_delays_confirm_negative_pattern():
     signals = [
-        {"delay_time": 20, "planned_duration": 120},
-        {"delay_time": 25, "planned_duration": 120},
-        {"delay_time": 15, "planned_duration": 120},
-        {"delay_time": 0, "planned_duration": 120}
+        Signal(signal_type=Signal_type.UNDERWORK, time=20, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=25, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=15, planned_duration=120),
+        Signal(signal_type=Signal_type.NONE, time=0, planned_duration=120)
     ]
 
     pattern = detect_pattern(signals)
@@ -43,14 +41,14 @@ def test_repeated_delays_confirm_negative_pattern():
 # Strength thresholds are intentionally coarse and count-based.
 def test_few_weak_signals_produce_low_strength_pattern():
     signals = [
-        {"delay_time": 5, "planned_duration": 120},
-        {"delay_time": 6, "planned_duration": 120},
-        {"delay_time": 7, "planned_duration": 120},
-        {"delay_time": 8, "planned_duration": 120},
-        {"delay_time": 5, "planned_duration": 120},
-        {"delay_time": 6, "planned_duration": 120},
-        {"delay_time": 7, "planned_duration": 120},
-        {"delay_time": 8, "planned_duration": 120}
+        Signal(signal_type=Signal_type.DELAY, time=5, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=6, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=7, planned_duration=120),
+        Signal(signal_type=Signal_type.UNDERWORK, time=8, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=5, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=6, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=7, planned_duration=120),
+        Signal(signal_type=Signal_type.UNDERWORK, time=8, planned_duration=120)
     ]
 
     pattern = detect_pattern(signals)
@@ -61,18 +59,18 @@ def test_few_weak_signals_produce_low_strength_pattern():
 
 def test_many_weak_signals_produce_high_strength_pattern():
     signals = [
-        {"delay_time": 5, "planned_duration": 120},
-        {"delay_time": 6, "planned_duration": 120},
-        {"delay_time": 7, "planned_duration": 120},
-        {"delay_time": 8, "planned_duration": 120},
-        {"delay_time": 5, "planned_duration": 120},
-        {"delay_time": 6, "planned_duration": 120},
-        {"delay_time": 7, "planned_duration": 120},
-        {"delay_time": 8, "planned_duration": 120},
-        {"delay_time": 5, "planned_duration": 120},
-        {"delay_time": 6, "planned_duration": 120},
-        {"delay_time": 7, "planned_duration": 120},
-        {"delay_time": 8, "planned_duration": 120}
+        Signal(signal_type=Signal_type.DELAY, time=5, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=6, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=7, planned_duration=120),
+        Signal(signal_type=Signal_type.UNDERWORK, time=8, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=5, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=6, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=7, planned_duration=120),
+        Signal(signal_type=Signal_type.UNDERWORK, time=8, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=5, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=6, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=7, planned_duration=120),
+        Signal(signal_type=Signal_type.UNDERWORK, time=8, planned_duration=120)
     ]
 
     pattern = detect_pattern(signals)
@@ -83,8 +81,8 @@ def test_many_weak_signals_produce_high_strength_pattern():
 
 def test_few_strong_signals_produce_high_strength_pattern():
     signals = [
-        {"timeout_time": 120, "planned_duration": 120},
-        {"delay_time": 70, "planned_duration": 120}
+        Signal(signal_type=Signal_type.TIMEOUT, time=120, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=70, planned_duration=120)
     ]
 
     pattern = detect_pattern(signals)
@@ -95,10 +93,10 @@ def test_few_strong_signals_produce_high_strength_pattern():
 
 def test_few_moderate_signals_produce_high_strength_pattern():
     signals = [
-        {"delay_time": 20, "planned_duration": 120},
-        {"delay_time": 15, "planned_duration": 120},
-        {"delay_time": 23, "planned_duration": 120},
-        {"delay_time": 20, "planned_duration": 120}
+        Signal(signal_type=Signal_type.DELAY, time=20, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=15, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=23, planned_duration=120),
+        Signal(signal_type=Signal_type.DELAY, time=20, planned_duration=120)
     ]
 
     pattern = detect_pattern(signals)
@@ -110,8 +108,8 @@ def test_few_moderate_signals_produce_high_strength_pattern():
 # Single positive signals should not trigger recovery
 def test_single_positive_signal_is_unconfirmed():
     signals = [
-        {"delay_time": 0, "planned_duration": 120},
-        {"underwork_time": 0, "planned_duration": 120}
+        Signal(signal_type=Signal_type.DELAY, time=0, planned_duration=120),
+        Signal(signal_type=Signal_type.UNDERWORK, time=0, planned_duration=120)
     ]
 
     pattern = detect_pattern(signals)

@@ -17,17 +17,17 @@ class Signal:
             underwork = self.compute_underwork(task)
             timeout = self.compute_timeout(task)
 
-            if timeout["timeout_time"] > 0:
+            if timeout["timeout_time"] and timeout["timeout_time"] > 0:
                 self.signal_type = Signal_type.TIMEOUT
                 self.time = timeout["timeout_time"]
                 self.planned_duration = timeout["planned_duration"]
             
-            elif underwork["underwork_time"] > 0:
+            elif underwork["underwork_time"] and underwork["underwork_time"] > 0:
                 self.signal_type = Signal_type.UNDERWORK
                 self.time = underwork["underwork_time"]
                 self.planned_duration = underwork["planned_duration"]
 
-            elif start_delay["delay_time"] > 0:
+            elif start_delay["delay_time"] and start_delay["delay_time"] > 0:
                 self.signal_type = Signal_type.DELAY
                 self.time = start_delay["delay_time"]
                 self.planned_duration = start_delay["planned_duration"]

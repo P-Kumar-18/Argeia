@@ -57,7 +57,7 @@ def test_new_window_created_when_none_exists():
 def test_no_previous_windows_on_first_run():
     repo = WindowRepository(db_path=":memory:")
     wm = WindowManager(repository=repo)
-    assert wm.previous_windows == []
+    assert list(wm.previous_windows) == []
 
 
 def test_existing_window_is_loaded_on_restart():

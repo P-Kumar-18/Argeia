@@ -1,6 +1,7 @@
-from app.signals import compute_start_delay_signal, compute_timeout_time, compute_underwork_signal
+from app.signals import Signal, Signal_type
 from app.tracker import Task
 from datetime import datetime, timedelta
+
 
 def test_start_on_time():
     start_time = datetime.now()
@@ -9,12 +10,9 @@ def test_start_on_time():
     task = Task(start_time=start_time, end_time=end_time, task_id=1, title="Test")
     task.start(when=start_time)
 
-    expected_dict = {
-        "delay_time": 0,
-        "planned_duration": 120
-    }
+    signal = Signal(task)
 
-    assert compute_start_delay_signal(task) == expected_dict
+    assert signal.signal_type == Signal_type.NONE
 
 
 def test_start_late():
@@ -23,73 +21,62 @@ def test_start_late():
 
     task = Task(start_time=start_time, end_time=end_time, task_id=1, title="Test")
     task.start(when=start_time + timedelta(hours=1))
-    
-    expected_dict = {
-        "delay_time": 60,
-        "planned_duration": 120
-    }
 
-    assert compute_start_delay_signal(task) == expected_dict
+    signal = Signal(task)
+
+    assert signal.signal_type == Signal_type.DELAY
+    assert signal.time == 60
+    assert signal.planned_duration == 120
 
 
-def test_task_started_early():
+def test_start_early():
     start_time = datetime.now()
     end_time = start_time + timedelta(hours=2)
 
     task = Task(start_time=start_time, end_time=end_time, task_id=1, title="Test")
     task.start(when=start_time - timedelta(minutes=5))
-    
-    expected_dict = {
-        "delay_time": 0,
-        "planned_duration": 120
-    }
 
-    assert compute_start_delay_signal(task) == expected_dict
+    signal = Signal(task)
+
+    assert signal.signal_type == Signal_type.NONE
 
 
-def test_task_stoped_early():
+def test_stopped_early():
     start_time = datetime.now()
     end_time = start_time + timedelta(hours=2)
-    complete_time = start_time + timedelta(hours=1)
 
     task = Task(start_time=start_time, end_time=end_time, task_id=1, title="Test")
     task.start(when=start_time)
-    task.complete(when=complete_time)
+    task.complete(when=start_time + timedelta(hours=1))
 
-    expected_dict = {
-        "underwork_time": 60,
-        "planned_duration": 120
-    }
+    signal = Signal(task)
 
-    assert compute_underwork_signal(task) == expected_dict
+    assert signal.signal_type == Signal_type.UNDERWORK
+    assert signal.time == 60
+    assert signal.planned_duration == 120
 
 
-def test_task_stopped_at_time():
+def test_stopped_on_time():
     start_time = datetime.now()
     end_time = start_time + timedelta(hours=2)
-    complete_time = start_time + timedelta(hours=2)
 
     task = Task(start_time=start_time, end_time=end_time, task_id=1, title="Test")
     task.start(when=start_time)
-    task.complete(when=complete_time)
+    task.complete(when=start_time + timedelta(hours=2))
 
-    expected_dict = {
-        "underwork_time": 0,
-        "planned_duration": 120
-    }
+    signal = Signal(task)
 
-    assert compute_underwork_signal(task) == expected_dict
+    assert signal.signal_type == Signal_type.NONE
 
 
-def test_task_never_started():
+def test_never_started():
     start_time = datetime.now()
     end_time = start_time + timedelta(hours=2)
 
     task = Task(start_time=start_time, end_time=end_time, task_id=1, title="Test")
-    
-    expected_dict = {
-        "timeout_time": 120,
-        "planned_duration": 120
-    }
 
-    assert compute_timeout_time(task) == expected_dict
+    signal = Signal(task)
+
+    assert signal.signal_type == Signal_type.TIMEOUT
+    assert signal.time == 120
+    assert signal.planned_duration == 120
