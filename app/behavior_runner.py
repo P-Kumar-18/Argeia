@@ -1,10 +1,19 @@
 from app.state_engine import apply_proposal, State
 from app.infrastructure.transition_repository import TransitionRepository
+from app.window_manager import WindowManager
 
 class BehaviorRunner:
-    def __init__(self, initial_state: State = None, repository = None):
-        self.repository = repository or TransitionRepository()
+    def __init__(self, initial_state: State = None, transition_repository = None, window_repository = None):
+        self.repository = transition_repository or TransitionRepository()
         self.current_state = initial_state or self.get_current_state()
+        self.window_manager = WindowManager(repository=window_repository)
+
+
+    def add_task(self, task):
+        proposal = self.window_manager.add_task(task)
+
+        if proposal:
+            self.process_proposal(proposal)
     
     def process_proposal(self, proposal):
         new_state, transition = apply_proposal(self.current_state, proposal)

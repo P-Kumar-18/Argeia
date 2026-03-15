@@ -183,7 +183,7 @@ All tests should pass.
 
 ## 🎯 Project Status
 
-The behavioral core is complete. Argeia detects procrastination signals, evaluates behavioral patterns across time windows, drives state transitions through structured proposals, and persists full behavioral history to SQLite with complete reconstruction on restart.
+The behavioral core is complete and fully integrated. Tasks flow from input through signal extraction, window management, pattern detection, behavior evaluation, and state transitions in a single pipeline coordinated by BehaviorRunner.
 
 **Implemented:**
 - Task domain model with procrastination signal extraction
@@ -193,6 +193,7 @@ The behavioral core is complete. Argeia detects procrastination signals, evaluat
 - Proposal-driven behavioral state transitions
 - Structured transition events for full behavioral explainability
 - Persistent storage for transitions, windows, and signals
+- Full pipeline integration from task input to state transition via BehaviorRunner
 - Comprehensive unit and integration tests
 
 ---

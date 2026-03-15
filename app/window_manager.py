@@ -1,5 +1,5 @@
 from app.tracker import Task
-from app.signals import Signal
+from app.signals import Signal, Signal_type
 from app.infrastructure.window_repository import WindowRepository
 from app.pattern_detection import detect_pattern
 from app.behavior_evaluator import evaluate_behavior
@@ -34,7 +34,7 @@ class WindowManager:
     def save_signal(self, task):
         signal = Signal(task)
 
-        if signal.signal_type == None:
+        if signal.signal_type == Signal_type.NONE:
             return
         else:
             self.current_window.signals.append(signal)
@@ -44,10 +44,10 @@ class WindowManager:
 
     def add_task(self, task: Task):
         if not task.completed:
-            return
+            return None
         if not datetime.now() >= self.current_window.window_end:
             self.save_signal(task)
-            
+            return None
         # Detect pattern at the end of the current window
         else:
             self.repository.close_window(self.current_window_id)
@@ -56,7 +56,7 @@ class WindowManager:
                 self.current_window.patterns.append(pattern)
                 self.repository.save_patterns(self.current_window_id, pattern)
 
-            self.proposal_generation()
+            proposal = self.proposal_generation()
 
             # Creating a new window and saving the current task
             self.previous_windows.append(self.current_window)
@@ -65,6 +65,7 @@ class WindowManager:
             self.current_window_id = self.repository.window_creation(self.current_window)
 
             self.save_signal(task)
+            return proposal
     
 
     def pattern_batching(self):
