@@ -1,4 +1,4 @@
-from app.tracker import Task
+from app.task import Task
 from enum import Enum
 class Signal_type(Enum):
     DELAY = "delay"

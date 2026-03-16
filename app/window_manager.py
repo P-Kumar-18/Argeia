@@ -1,4 +1,4 @@
-from app.tracker import Task
+from app.task import Task
 from app.signals import Signal, Signal_type
 from app.infrastructure.window_repository import WindowRepository
 from app.pattern_detection import detect_pattern
