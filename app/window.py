@@ -1,4 +1,5 @@
 from enum import Enum
+from app.signals import Signal_type
 from datetime import datetime, timedelta
 
 
@@ -27,7 +28,7 @@ class Window:
 
     def add_signals(self, signals):
         for signal in signals:
-            if signal.signal_type == None:
+            if signal.signal_type == Signal_type.NONE:
                 continue
             else:
                 self.signals.append(signal)
