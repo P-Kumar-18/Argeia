@@ -2,7 +2,8 @@ from app.behavior_evaluator import Proposal_kind, Proposal_severity, Proposal
 from enum import Enum
 from datetime import datetime
 
-# Classifying states
+
+# --- States ---
 class State(Enum):
     STABLE = "stable"
     DRIFTING = "drifting"
@@ -10,6 +11,7 @@ class State(Enum):
     DISENGAGED = "disengaged"
 
 
+# --- Transition ---
 class Transition:
     def __init__(self, previous_state: State, current_state: State, proposal: Proposal, timestamp = None):
         self.previous_state = previous_state
@@ -20,7 +22,7 @@ class Transition:
         self.timestamp = timestamp or datetime.now()
 
 
-# State Engine
+# --- State Engine ---
 def apply_proposal(
         current_state: State, 
         proposal: Proposal = None
@@ -39,7 +41,6 @@ def apply_proposal(
     else:
         transition = None
     return new_state, transition
-    
 
 def degrade(
         current_state: State,
@@ -63,7 +64,6 @@ def degrade(
     
     return current_state
 
-    
 def recovery(
         current_state: State,
         proposal: Proposal

@@ -18,7 +18,7 @@ class FakeRepository:
 
 def test_no_proposal_does_not_change_state_or_save():
     repo = FakeRepository()
-    runner = BehaviorRunner(repository=repo)
+    runner = BehaviorRunner(transition_repository=repo)
 
     new_state = runner.process_proposal(None)
 
@@ -28,7 +28,7 @@ def test_no_proposal_does_not_change_state_or_save():
 
 def test_degradation_proposal_triggers_transition_and_save():
     repo = FakeRepository()
-    runner = BehaviorRunner(repository=repo)
+    runner = BehaviorRunner(transition_repository=repo)
 
     proposal = Proposal(
         kind=Proposal_kind.DEGRADATION,
@@ -48,7 +48,7 @@ def test_degradation_proposal_triggers_transition_and_save():
 
 def test_no_transition_no_save():
     repo = FakeRepository()
-    runner = BehaviorRunner(initial_state=State.DISENGAGED, repository=repo)
+    runner = BehaviorRunner(initial_state=State.DISENGAGED, transition_repository=repo)
 
     proposal = Proposal(
         kind=Proposal_kind.DEGRADATION,

@@ -1,6 +1,8 @@
 from app.pattern_detection import Pattern_polarity_type, Pattern_strength_type
 from enum import Enum
 
+
+# --- Proposal Types ---
 class Proposal_severity(Enum):
     NORMAL = "normal"
     SEVERE = "severe"
@@ -15,7 +17,7 @@ class Proposal_windows_scope(Enum):
     SINGLE_WINDOW = "single_window"
     MULTI_WINDOW = "multi_window"
 
-
+# --- Proposal ---
 class Proposal:
     def __init__(self, kind = None, severity = None, evidence_reason = None):
         self.kind = kind
@@ -23,28 +25,7 @@ class Proposal:
         self.evidence_reason = evidence_reason
 
 
-def detect_sustained_pattern(windows: list, required_windows: int = 3):
-    if len(windows) < required_windows - 1:
-        return False
-
-    relevant_windows = windows[-(required_windows - 1):]
-
-    for window in relevant_windows:
-        positive_flag = False
-        for pattern in window:       
-            if (
-            pattern["polarity"] == Pattern_polarity_type.POSITIVE
-            and pattern["confirmed"] is True
-        ):
-                positive_flag = True
-                break
-        
-        if not positive_flag:
-            return False
-        
-    return True
-
-
+# ---Evaluate behavior---
 def evaluate_behavior(
         current_window:list,
         previous_windows: list = None
@@ -144,3 +125,26 @@ def evaluate_behavior(
             return proposal
     
     return None
+
+
+# ---Detect sustained patterns---
+def detect_sustained_pattern(windows: list, required_windows: int = 3):
+    if len(windows) < required_windows - 1:
+        return False
+
+    relevant_windows = windows[-(required_windows - 1):]
+
+    for window in relevant_windows:
+        positive_flag = False
+        for pattern in window:       
+            if (
+            pattern["polarity"] == Pattern_polarity_type.POSITIVE
+            and pattern["confirmed"] is True
+        ):
+                positive_flag = True
+                break
+        
+        if not positive_flag:
+            return False
+        
+    return True

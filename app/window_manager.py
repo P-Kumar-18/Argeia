@@ -3,10 +3,12 @@ from app.signals import Signal, Signal_type
 from app.infrastructure.window_repository import WindowRepository
 from app.pattern_detection import detect_pattern
 from app.behavior_evaluator import evaluate_behavior
-from app.window import Window, Window_status, compute_week_start
+from app.window import Window, compute_week_start
 from datetime import datetime
 from collections import deque
 
+
+# --- Window Manger ---
 class WindowManager:
     def __init__(self, repository = None, required_window = 3):
         self.repository = repository if repository is not None else WindowRepository()
@@ -29,18 +31,6 @@ class WindowManager:
             window_n = Window(datetime.fromisoformat(window["window_start"]))
             window_n.add_patterns(self.repository.get_patterns(window))
             self.previous_windows.append(window_n)
-    
-
-    def save_signal(self, task):
-        signal = Signal(task)
-
-        if signal.signal_type == Signal_type.NONE:
-            return
-        else:
-            self.current_window.signals.append(signal)
-            self.repository.save_signals(self.current_window_id, signal)
-            self.pattern_batching()
-    
 
     def add_task(self, task: Task):
         if not task.completed:
@@ -67,6 +57,15 @@ class WindowManager:
             self.save_signal(task)
             return proposal
     
+    def save_signal(self, task):
+        signal = Signal(task)
+
+        if signal.signal_type == Signal_type.NONE:
+            return
+        else:
+            self.current_window.signals.append(signal)
+            self.repository.save_signals(self.current_window_id, signal)
+            self.pattern_batching()
 
     def pattern_batching(self):
         self.current_window.task_number += 1
@@ -81,7 +80,6 @@ class WindowManager:
                 self.current_window.signals.clear()
                 self.current_window.patterns.append(pattern)
                 self.repository.save_patterns(self.current_window_id, pattern)
-    
 
     def proposal_generation(self):
         previous_windows = []

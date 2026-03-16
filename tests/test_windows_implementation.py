@@ -1,4 +1,5 @@
-from app.window_manager import Window, WindowManager, Window_status
+from app.window import Window, Window_status
+from app.window_manager import WindowManager
 from app.infrastructure.window_repository import WindowRepository
 from app.signals import Signal, Signal_type
 from app.pattern_detection import Pattern_polarity_type, Pattern_strength_type

@@ -1,6 +1,7 @@
 from app.behavior_evaluator import evaluate_behavior, Proposal_kind, Proposal_severity
 from app.pattern_detection import Pattern_polarity_type, Pattern_strength_type
 
+
 def test_negative_pattern_priority_over_positive_sustained():
     window_1 = [{"polarity": Pattern_polarity_type.POSITIVE, "confirmed": True}]
     window_2 = [{"polarity": Pattern_polarity_type.POSITIVE, "confirmed": True}]
@@ -17,6 +18,7 @@ def test_negative_pattern_priority_over_positive_sustained():
 
     assert proposal.kind == Proposal_kind.DEGRADATION
     assert proposal.severity == Proposal_severity.SEVERE
+
 
 def test_adjacent_low_negatives_trigger_degradation():
     previous_windows = [

@@ -6,7 +6,6 @@ from app.behavior_evaluator import Proposal, Proposal_kind, Proposal_severity
 
 def test_restart_with_empty_db_initializes_stable():
     repo = TransitionRepository(db_path=":memory:")
-
     runner = BehaviorRunner(repository=repo)
 
     assert runner.current_state == State.STABLE
@@ -15,7 +14,6 @@ def test_restart_with_empty_db_initializes_stable():
 def test_restart_restores_last_state():
 
     repo = TransitionRepository(db_path=":memory:")
-
     runner = BehaviorRunner(repository=repo)
 
     proposal = Proposal(
@@ -25,7 +23,6 @@ def test_restart_restores_last_state():
     )
 
     runner.process_proposal(proposal)
-
     new_runner = BehaviorRunner(repository=repo)
 
     assert new_runner.current_state == State.DRIFTING
@@ -34,7 +31,6 @@ def test_restart_restores_last_state():
 def test_restart_uses_latest_transition():
 
     repo = TransitionRepository(db_path=":memory:")
-
     runner = BehaviorRunner(repository=repo)
 
     # 1st degradation

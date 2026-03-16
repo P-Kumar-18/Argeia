@@ -1,5 +1,6 @@
-from app.tracker import Task
+from app.task import Task
 from datetime import datetime, timedelta
+
 
 def test_task_creation():
     start = datetime.now()
@@ -15,6 +16,7 @@ def test_task_creation():
     assert task.title == "Study"
     assert task.started_at is None
     assert task.completed is False
+
 
 def test_delay_when_started_late():
     scheduled_start = datetime.now()

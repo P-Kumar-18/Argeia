@@ -1,5 +1,8 @@
 from app.task import Task
 from enum import Enum
+
+
+# --- Signal Types ---
 class Signal_type(Enum):
     DELAY = "delay"
     UNDERWORK = "underwork"
@@ -7,6 +10,7 @@ class Signal_type(Enum):
     NONE = "none"
 
 
+# --- Signal ---
 class Signal:
     def __init__(self, task = None, signal_type = None, time = None, planned_duration = None):
         if task is None and not (signal_type is not None and time is not None and planned_duration is not None):
@@ -40,21 +44,20 @@ class Signal:
             self.time = time
             self.planned_duration = planned_duration
 
-    def compute_start_delay(
+    def compute_timeout(
             self,
             task: Task
     )-> dict:
-        delay_time = task.delay_time()
+        timeout_time = task.timeout_time()
         total_time = int(
             (task.scheduled_for_end - task.scheduled_for_start).total_seconds() / 60
         )
 
         return {
-            "delay_time": delay_time, 
+            "timeout_time": timeout_time,
             "planned_duration": total_time
         }
-
-
+    
     def compute_underwork(
             self,
             task: Task
@@ -68,18 +71,17 @@ class Signal:
             "underwork_time": underwork_time,
             "planned_duration": total_time
         }
-
-
-    def compute_timeout(
+    
+    def compute_start_delay(
             self,
             task: Task
     )-> dict:
-        timeout_time = task.timeout_time()
+        delay_time = task.delay_time()
         total_time = int(
             (task.scheduled_for_end - task.scheduled_for_start).total_seconds() / 60
         )
 
         return {
-            "timeout_time": timeout_time,
+            "delay_time": delay_time, 
             "planned_duration": total_time
         }

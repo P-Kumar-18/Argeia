@@ -1,5 +1,5 @@
 from app.signals import Signal, Signal_type
-from app.tracker import Task
+from app.task import Task
 from datetime import datetime, timedelta
 
 

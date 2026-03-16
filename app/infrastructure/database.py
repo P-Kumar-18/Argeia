@@ -1,12 +1,14 @@
-import sqlite3, os
+import os
+import sqlite3
 
+
+# --- Database ---
 class Database:
     def __init__(self, db_path):
         self.db_path = db_path
         self.connection = sqlite3.connect(self.db_path)
         self.initialize_schema()
     
-
     def initialize_schema(self):
         self.create_directory()
         self.create_transition()
@@ -15,13 +17,11 @@ class Database:
         self.create_window_patterns()
         self.connection.commit()
 
-
     def create_directory(self):
         if self.db_path != ":memory:":
             directory = os.path.dirname(self.db_path)
             if directory:
                 os.makedirs(directory, exist_ok=True)
-
 
     def create_transition(self):
         cursor = self.connection.cursor()
@@ -36,7 +36,6 @@ class Database:
             timestamp TEXT NOT NULL
             )""")
     
-
     def create_behavior_windows(self):
         cursor = self.connection.cursor()
 
@@ -46,7 +45,6 @@ class Database:
             window_end TEXT NOT NULL,
             status TEXT NOT NULL
             )""")
-
 
     def create_window_signals(self):
         cursor = self.connection.cursor()
@@ -60,7 +58,6 @@ class Database:
             CONSTRAINT FK_WindowId FOREIGN KEY (window_id) REFERENCES behavior_windows(id)
             )""")
     
-
     def create_window_patterns(self):
         cursor = self.connection.cursor()
 
@@ -71,4 +68,4 @@ class Database:
             strength TEXT NOT NULL,
             confirmed TEXT NOT NULL,
             CONSTRAINT FK_WindowId FOREIGN KEY (window_id) REFERENCES behavior_windows(id)
-            )""")        
+            )""")

@@ -1,10 +1,10 @@
 from datetime import datetime
 
-class Task:
-    # Task and Tracking field may be separated in the future.
 
-    # Planning/Behavior
-    def __init__(self, task_id, title, start_time, end_time,  user_id=None, comment=None):
+# --- Task ---
+class Task:
+    # NOTE: Task and Tracking field may be separated in the future.
+    def __init__(self, task_id, title, start_time, end_time, user_id=None, comment=None):
         self.id = task_id
         self.title = title
         self.scheduled_for_start = start_time
@@ -13,16 +13,14 @@ class Task:
         self.comment = comment
         self.user_id = user_id
 
-        # Tracking
         self.started_at = None
         self.completed_at = None
         self.completed = False
     
-
-    # Behavior Tracking
+    # --- Tracking ---
     def start(self, when=None):
         self.started_at = when or datetime.now()
-    
+
     def complete(self, when=None):
         self.completed_at = when or datetime.now()
         self.completed = True
@@ -44,7 +42,7 @@ class Task:
         delta = self.scheduled_for_end - self.scheduled_for_start
         return int(delta.total_seconds() // 60)
     
-    # For not working the planed time
+    # For not working the planned time
     def underwork_time(self):
         if not self.started_at or not self.completed_at:
             return None

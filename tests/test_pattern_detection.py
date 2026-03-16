@@ -38,7 +38,9 @@ def test_repeated_delays_confirm_negative_pattern():
     assert pattern["confirmed"] is True
 
 
-# Strength thresholds are intentionally coarse and count-based.
+"""
+    Strength thresholds are intentionally coarse and count-based
+"""
 def test_few_weak_signals_produce_low_strength_pattern():
     signals = [
         Signal(signal_type=Signal_type.DELAY, time=5, planned_duration=120),
@@ -79,6 +81,7 @@ def test_many_weak_signals_produce_high_strength_pattern():
     assert pattern["strength"] == Pattern_strength_type.HIGH
     assert pattern["confirmed"] is True 
 
+
 def test_few_strong_signals_produce_high_strength_pattern():
     signals = [
         Signal(signal_type=Signal_type.TIMEOUT, time=120, planned_duration=120),
@@ -105,7 +108,9 @@ def test_few_moderate_signals_produce_high_strength_pattern():
     assert pattern["strength"] == Pattern_strength_type.HIGH
 
 
-# Single positive signals should not trigger recovery
+"""
+    Single positive signals should not trigger recovery
+"""
 def test_single_positive_signal_is_unconfirmed():
     signals = [
         Signal(signal_type=Signal_type.DELAY, time=0, planned_duration=120),
