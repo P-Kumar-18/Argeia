@@ -32,7 +32,7 @@ def test_add_signals_skips_none_signal_type():
     window = Window(datetime(2024, 1, 1))
     s_valid = Signal(signal_type=Signal_type.DELAY, time=30, planned_duration=60)
     s_none = Signal(signal_type=Signal_type.DELAY, time=30, planned_duration=60)
-    s_none.signal_type = None
+    s_none.signal_type = Signal_type.NONE
     window.add_signals([s_valid, s_none])
     assert len(window.signals) == 1
 
