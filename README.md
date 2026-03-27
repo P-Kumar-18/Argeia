@@ -16,6 +16,8 @@ This project is being developed incrementally with a strong emphasis on **clean 
 
 - Define tasks with planned start and end times
 - Track actual task execution — start and completion
+- Task persistence via SQLite
+- Full pipeline entry point through TaskRunner — create, start, and complete tasks
 - Detect procrastination signals:
   - start delay
   - underwork
@@ -69,7 +71,7 @@ Pattern evidence is interpreted by the behavior evaluation layer, which resolves
 Argeia models procrastination as a progression of behavioral layers:
 
 ```
-Events → Signals → Windows → Pattern Batching → Patterns → Behavior Evaluation → State Engine → Transition Events → Persistence → State Reconstruction
+Tasks → Signals → Windows → Pattern Batching → Patterns → Behavior Evaluation → State Engine → Transition Events → Persistence → State Reconstruction
 ```
 
 - **Signals** measure raw deviations from planned behavior
@@ -101,6 +103,7 @@ argeia/
 ├── app/
 │   ├── infrastructure/
 │   │   ├── database.py                 # SQLite connection and schema initialization
+│   │   ├── task_repository.py          # Task persistence
 │   │   ├── transition_repository.py    # Transition history persistence
 │   │   └── window_repository.py        # Window and signal persistence
 │   ├── __init__.py                     # Flask app factory
@@ -111,7 +114,8 @@ argeia/
 │   ├── routes.py                       # Web routes
 │   ├── signals.py                      # Procrastination signal extraction
 │   ├── state_engine.py                 # Behavioral state transition engine
-│   ├── tracker.py                      # Core task and procrastination logic
+│   ├── task_runner.py                  # Task lifecycle and pipeline entry point
+│   ├── task.py                         # Core task and procrastination logic
 │   ├── window.py                       # Window model and status definitions
 │   └── window_manager.py               # Window lifecycle and pattern batching
 ├── data/
@@ -128,6 +132,7 @@ argeia/
 │   ├── test_runner_restart.py          # Tests for state reconstruction on restart
 │   ├── test_signals.py                 # Tests for signal extraction
 │   ├── test_state_transitions.py       # Tests for behavioral state transitions
+│   ├── test_task_implementation.py     # Tests for TaskRunner and TaskRepository
 │   ├── test_task.py                    # Tests for task behavior
 │   └── test_windows_implementation.py  # Tests for Window and WindowManager
 ├── .gitignore
@@ -186,7 +191,9 @@ All tests should pass.
 The behavioral core is complete and fully integrated. Tasks flow from input through signal extraction, window management, pattern detection, behavior evaluation, and state transitions in a single pipeline coordinated by BehaviorRunner.
 
 **Implemented:**
-- Task domain model with procrastination signal extraction
+- Task domain model, persistence, and lifecycle management via TaskRunner
+- Full pipeline integration from task input to state transition
+- Comprehensive unit and integration tests
 - Weekly window lifecycle with automatic open/close and restart recovery
 - Intra-window pattern batching and signal accumulation
 - Pattern detection with polarity and strength classification

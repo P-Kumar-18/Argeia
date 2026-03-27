@@ -30,4 +30,3 @@ class BehaviorRunner:
             self.repository.save(transition)
         
         self.current_state = new_state
-        return self.current_state

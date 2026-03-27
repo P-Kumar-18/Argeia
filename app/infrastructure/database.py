@@ -15,6 +15,7 @@ class Database:
         self.create_behavior_windows()
         self.create_window_signals()
         self.create_window_patterns()
+        self.create_tasks()
         self.connection.commit()
 
     def create_directory(self):
@@ -68,4 +69,20 @@ class Database:
             strength TEXT NOT NULL,
             confirmed TEXT NOT NULL,
             CONSTRAINT FK_WindowId FOREIGN KEY (window_id) REFERENCES behavior_windows(id)
+            )""")
+    
+    def create_tasks(self):
+        cursor = self.connection.cursor()
+
+        cursor.execute("""CREATE TABLE IF NOT EXISTS tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            schedule_for_start TEXT NOT NULL,
+            schedule_for_end TEXT NOT NULL,
+            created_on TEXT NOT NULL,
+            comment TEXT,
+            user_id INTEGER,
+            started_at TEXT,
+            completed_at TEXT,
+            completed TEXT NOT NULL
             )""")
