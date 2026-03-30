@@ -1,7 +1,6 @@
-from app.task import Task
-from app.infrastructure.task_repository import TaskRepository
-from app.behavior_runner import BehaviorRunner
-from datetime import datetime
+from app.domain import Task
+from app.infrastructure import TaskRepository
+from app.runner import BehaviorRunner
 
 
 # --- Task Runner ---

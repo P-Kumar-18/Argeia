@@ -1,5 +1,5 @@
-from app.pattern_detection import detect_pattern, Pattern_polarity_type, Pattern_strength_type
-from app.signals import Signal, Signal_type
+from app.core import Pattern_polarity_type, Pattern_strength_type, detect_pattern
+from app.domain import Signal, Signal_type
 
 def test_single_delay_creates_unconfirmed_negative_pattern():
     signals = [

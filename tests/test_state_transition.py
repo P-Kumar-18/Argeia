@@ -1,5 +1,4 @@
-from app.state_engine import State, apply_proposal
-from app.behavior_evaluator import Proposal_kind, Proposal_severity, Proposal
+from app.core import State, Proposal_kind, Proposal_severity, Proposal, apply_proposal
 
 
 """

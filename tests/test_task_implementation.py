@@ -1,9 +1,6 @@
-from app.task_runner import TaskRunner
-from app.infrastructure.task_repository import TaskRepository
-from app.behavior_runner import BehaviorRunner
-from app.state_engine import State
-from app.infrastructure.window_repository import WindowRepository
 from datetime import datetime, timedelta
+from app.infrastructure import TaskRepository, WindowRepository
+from app.runner import TaskRunner, BehaviorRunner
 
 
 class FakeRepository:

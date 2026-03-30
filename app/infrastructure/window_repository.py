@@ -1,8 +1,7 @@
-from app.infrastructure.database import Database
-from app.signals import Signal, Signal_type
-from app.pattern_detection import Pattern_polarity_type, Pattern_strength_type
-from app.window import Window
 import sqlite3
+from app.infrastructure import Database
+from app.domain import Signal, Signal_type, Window
+from app.core import Pattern_polarity_type, Pattern_strength_type
 
 
 # --- Converters ---

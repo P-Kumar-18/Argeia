@@ -1,5 +1,4 @@
-from app.behavior_evaluator import evaluate_behavior, Proposal_kind, Proposal_severity
-from app.pattern_detection import Pattern_polarity_type, Pattern_strength_type
+from app.core import Proposal_kind, Proposal_severity, Pattern_polarity_type, Pattern_strength_type, evaluate_behavior
 
 
 def test_negative_pattern_priority_over_positive_sustained():

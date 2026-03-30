@@ -1,6 +1,5 @@
-from app.signals import Signal, Signal_type
-from app.task import Task
 from datetime import datetime, timedelta
+from app.domain import Signal, Signal_type, Task
 
 
 def test_start_on_time():

@@ -1,5 +1,5 @@
 from enum import Enum
-from app.signals import Signal
+from app.domain import Signal
 
 
 # --- Pattern Types ---

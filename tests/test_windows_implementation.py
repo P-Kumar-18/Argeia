@@ -1,9 +1,8 @@
-from app.window import Window, Window_status
-from app.window_manager import WindowManager
-from app.infrastructure.window_repository import WindowRepository
-from app.signals import Signal, Signal_type
-from app.pattern_detection import Pattern_polarity_type, Pattern_strength_type
 from datetime import datetime, timedelta
+from app.core import Pattern_polarity_type, Pattern_strength_type
+from app.domain import Window, Window_status, Signal, Signal_type
+from app.infrastructure.window_repository import WindowRepository
+from app.runner.window_manager import WindowManager
 
 
 """

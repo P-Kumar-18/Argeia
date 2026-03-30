@@ -1,7 +1,6 @@
-from app.behavior_runner import BehaviorRunner
-from app.behavior_evaluator import Proposal, Proposal_kind, Proposal_severity
-from app.state_engine import State
-from app.window_manager import WindowRepository
+from app.core import Proposal, Proposal_kind, Proposal_severity, State
+from app.infrastructure import WindowRepository
+from app.runner import BehaviorRunner
 
 
 class FakeRepository:

@@ -1,4 +1,3 @@
-from app.task import Task
 from enum import Enum
 
 

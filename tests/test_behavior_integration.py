@@ -1,6 +1,4 @@
-from app.behavior_evaluator import evaluate_behavior
-from app.pattern_detection import Pattern_polarity_type, Pattern_strength_type
-from app.state_engine import State, apply_proposal
+from app.core import Pattern_polarity_type, Pattern_strength_type, State, apply_proposal, evaluate_behavior
 
 
 """

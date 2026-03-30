@@ -1,6 +1,6 @@
 from enum import Enum
-from app.signals import Signal_type
 from datetime import datetime, timedelta
+from app.domain import Signal_type
 
 
 # --- Window  Status ---

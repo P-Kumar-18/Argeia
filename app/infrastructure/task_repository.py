@@ -1,5 +1,5 @@
-from app.infrastructure.database import Database
 from datetime import datetime
+from app.infrastructure import Database
 
 
 # --- Task Repository ---

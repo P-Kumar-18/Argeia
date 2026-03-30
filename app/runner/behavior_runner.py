@@ -1,6 +1,6 @@
-from app.state_engine import apply_proposal, State
-from app.infrastructure.transition_repository import TransitionRepository
-from app.window_manager import WindowManager
+from app.core import apply_proposal, State
+from app.infrastructure import TransitionRepository
+from app.runner import WindowManager
 
 
 # --- BehaviorRunner ---

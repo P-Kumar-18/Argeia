@@ -1,8 +1,7 @@
-import sqlite3
 import datetime
-from app.infrastructure.database import Database
-from app.state_engine import Transition, State
-from app.behavior_evaluator import Proposal, Proposal_kind, Proposal_severity
+import sqlite3
+from app.core import Transition, State, Proposal, Proposal_kind, Proposal_severity
+from app.infrastructure import Database
 
 
 # --- Converters ---

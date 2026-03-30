@@ -1,8 +1,6 @@
-from app.behavior_runner import BehaviorRunner
-from app.infrastructure.transition_repository import TransitionRepository
-from app.state_engine import State
-from app.behavior_evaluator import Proposal, Proposal_kind, Proposal_severity
-from app.window_manager import WindowRepository
+from app.core import State, Proposal, Proposal_kind, Proposal_severity
+from app.infrastructure import TransitionRepository, WindowRepository
+from app.runner import BehaviorRunner
 
 
 def test_restart_with_empty_db_initializes_stable():

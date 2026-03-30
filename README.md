@@ -43,6 +43,7 @@ This project is being developed incrementally with a strong emphasis on **clean 
 - Structured Transition events emitted on accepted state changes
 - Persistent history for transitions, windows, and signals via SQLite
 - Full state and window reconstruction on startup
+- Web interface via Flask with server-rendered templates
 
 ---
 
@@ -101,23 +102,30 @@ These events form a complete behavioral history and enable explainability withou
 ```
 argeia/
 ├── app/
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── behavior_evaluator.py       # Evidence interpretation and proposal generation
+│   │   ├── pattern_detection.py        # Signal interpretation and pattern detection
+│   │   └── state_engine.py             # Behavioral state transition engine
+│   ├── domain/
+│   │   ├── __init__.py
+│   │   ├── signals.py                  # Procrastination signal extraction
+│   │   ├── task.py                     # Core task and procrastination logic
+│   │   └── window.py                   # Window model and status definitions
 │   ├── infrastructure/
+│   │   ├── __init__.py
 │   │   ├── database.py                 # SQLite connection and schema initialization
 │   │   ├── task_repository.py          # Task persistence
 │   │   ├── transition_repository.py    # Transition history persistence
 │   │   └── window_repository.py        # Window and signal persistence
+│   ├── runner/
+│   │   ├── __init__.py
+│   │   ├── behavior_runner.py          # Application layer coordinating state engine and persistence
+│   │   ├── task_runner.py              # Task lifecycle and pipeline entry point
+│   │   └── window_manager.py           # Window lifecycle and pattern batching
 │   ├── __init__.py                     # Flask app factory
-│   ├── behavior_evaluator.py           # Evidence interpretation and proposal generation
-│   ├── behavior_runner.py              # Application layer coordinating state engine and persistence
 │   ├── main.py                         # Application entry point
-│   ├── pattern_detection.py            # Signal interpretation and pattern detection
-│   ├── routes.py                       # Web routes
-│   ├── signals.py                      # Procrastination signal extraction
-│   ├── state_engine.py                 # Behavioral state transition engine
-│   ├── task_runner.py                  # Task lifecycle and pipeline entry point
-│   ├── task.py                         # Core task and procrastination logic
-│   ├── window.py                       # Window model and status definitions
-│   └── window_manager.py               # Window lifecycle and pattern batching
+│   └── routes.py                       # Web routes
 ├── data/
 │   └── argeia.db                       # SQLite database
 ├── docs/
@@ -137,6 +145,7 @@ argeia/
 │   └── test_windows_implementation.py  # Tests for Window and WindowManager
 ├── .gitignore
 ├── DESIGN.md                           # High-level system design
+├── LICENSE
 ├── README.md
 └── requirements.txt
 ```
@@ -180,9 +189,10 @@ All tests should pass.
 
 - Python
 - Pytest
-- Flask (in progress)
+- Flask
 - SQLite
-- HTML / CSS (planned)
+- Jinja2 (in progress)
+- HTML / CSS (in progress)
 
 ---
 
@@ -192,7 +202,7 @@ The behavioral core is complete and fully integrated. Tasks flow from input thro
 
 **Implemented:**
 - Task domain model, persistence, and lifecycle management via TaskRunner
-- Full pipeline integration from task input to state transition
+- Full pipeline integration from task input to state transition via BehaviorRunner
 - Comprehensive unit and integration tests
 - Weekly window lifecycle with automatic open/close and restart recovery
 - Intra-window pattern batching and signal accumulation
@@ -200,11 +210,11 @@ The behavioral core is complete and fully integrated. Tasks flow from input thro
 - Proposal-driven behavioral state transitions
 - Structured transition events for full behavioral explainability
 - Persistent storage for transitions, windows, and signals
-- Full pipeline integration from task input to state transition via BehaviorRunner
-- Comprehensive unit and integration tests
+- Flask app factory with blueprint registration
+- Server-rendered web interface with Jinja2 (in progress)
 
 ---
 
 ## 📝 License
 
-This project is for educational purposes.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

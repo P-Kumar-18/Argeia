@@ -1,11 +1,8 @@
-from app.task import Task
-from app.signals import Signal, Signal_type
-from app.infrastructure.window_repository import WindowRepository
-from app.pattern_detection import detect_pattern
-from app.behavior_evaluator import evaluate_behavior
-from app.window import Window, compute_week_start
-from datetime import datetime
 from collections import deque
+from datetime import datetime
+from app.core import detect_pattern, evaluate_behavior
+from app.domain import Task, Signal, Signal_type, Window, compute_week_start
+from app.infrastructure import WindowRepository
 
 
 # --- Window Manger ---

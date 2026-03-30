@@ -1,6 +1,6 @@
-from app.behavior_evaluator import Proposal_kind, Proposal_severity, Proposal
 from enum import Enum
 from datetime import datetime
+from app.core import Proposal, Proposal_kind, Proposal_severity
 
 
 # --- States ---
