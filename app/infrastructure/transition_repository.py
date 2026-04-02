@@ -1,7 +1,11 @@
 import datetime
 import sqlite3
 from app.core import Transition, State, Proposal, Proposal_kind, Proposal_severity
-from app.infrastructure import Database
+from .database import Database, get_default_path
+
+
+# --- Getting default database path ---
+db_path = get_default_path()
 
 
 # --- Converters ---
@@ -21,7 +25,7 @@ def convert_row(row):
 
 # --- Transition Repository ---
 class TransitionRepository:
-    def __init__(self, db_path = "../data/argeia.db"):
+    def __init__(self, db_path=db_path):
         self.db_path = db_path
         self.database = Database(self.db_path)
 

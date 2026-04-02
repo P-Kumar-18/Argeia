@@ -1,6 +1,6 @@
 from app.domain import Task
 from app.infrastructure import TaskRepository
-from app.runner import BehaviorRunner
+from .behavior_runner import BehaviorRunner
 
 
 # --- Task Runner ---

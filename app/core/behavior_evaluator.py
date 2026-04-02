@@ -1,5 +1,5 @@
 from enum import Enum
-from app.core import Pattern_polarity_type, Pattern_strength_type
+from .pattern_detection import Pattern_polarity_type, Pattern_strength_type
 
 
 # --- Proposal Types ---

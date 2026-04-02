@@ -1,10 +1,14 @@
 from datetime import datetime
-from app.infrastructure import Database
+from .database import Database, get_default_path
+
+
+# --- Getting default database path ---
+db_path = get_default_path()
 
 
 # --- Task Repository ---
 class TaskRepository:
-    def __init__(self, db_path = "../data/argeia.db"):
+    def __init__(self, db_path=db_path):
         self.db_path = db_path
         self.database = Database(self.db_path)
 

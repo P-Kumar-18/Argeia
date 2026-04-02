@@ -1,6 +1,6 @@
 from app.core import apply_proposal, State
 from app.infrastructure import TransitionRepository
-from app.runner import WindowManager
+from .window_manager import WindowManager
 
 
 # --- BehaviorRunner ---

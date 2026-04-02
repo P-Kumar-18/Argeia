@@ -1,7 +1,11 @@
 import sqlite3
-from app.infrastructure import Database
+from .database import Database, get_default_path
 from app.domain import Signal, Signal_type, Window
 from app.core import Pattern_polarity_type, Pattern_strength_type
+
+
+# --- Getting default database path ---
+db_path = get_default_path()
 
 
 # --- Converters ---
@@ -19,7 +23,7 @@ def convert_row_pattern(row):
 
 # --- Window Repository ---
 class WindowRepository:
-    def __init__(self, db_path = "../data/argeia.db"):
+    def __init__(self, db_path=db_path):
         self.db_path = db_path
         self.database = Database(self.db_path)
 

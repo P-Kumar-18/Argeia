@@ -2,6 +2,12 @@ import os
 import sqlite3
 
 
+# --- Defining default path ---
+def get_default_path():
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    return os.path.join(BASE_DIR, "data", "argeia.db")
+
+
 # --- Database ---
 class Database:
     def __init__(self, db_path):

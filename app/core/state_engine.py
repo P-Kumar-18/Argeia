@@ -1,6 +1,6 @@
 from enum import Enum
 from datetime import datetime
-from app.core import Proposal, Proposal_kind, Proposal_severity
+from .behavior_evaluator import Proposal, Proposal_kind, Proposal_severity
 
 
 # --- States ---
