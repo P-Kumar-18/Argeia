@@ -61,6 +61,8 @@ class WindowRepository:
             signal.planned_duration
         ))
 
+        self.database.connection.commit()
+
     def save_patterns(self, window_id, pattern: dict):
         cursor = self.database.connection.cursor()
         cursor.execute("""INSERT INTO window_patterns(
@@ -74,6 +76,8 @@ class WindowRepository:
             pattern["strength"].value,
             pattern["confirmed"]
         ))
+
+        self.database.connection.commit()
 
     def get_latest_open_window(self):
         self.database.connection.row_factory = sqlite3.Row

@@ -17,6 +17,7 @@ class Database:
     
     def initialize_schema(self):
         self.create_directory()
+        self.create_transition_reasons()
         self.create_transition()
         self.create_behavior_windows()
         self.create_window_signals()
@@ -39,8 +40,20 @@ class Database:
             current_state TEXT NOT NULL,
             proposal_kind TEXT NOT NULL,
             proposal_severity TEXT NOT NULL,
-            evidence_reason TEXT NOT NULL,
-            timestamp TEXT NOT NULL
+            evidence_reason INT NOT NULL,
+            timestamp TEXT NOT NULL,
+            CONSTRAINT FK_EvidenceReason FOREIGN KEY (evidence_reason) REFERENCES transition_reasons(id)
+            )""")
+    
+    def create_transition_reasons(self):
+        cursor = self.connection.cursor()
+        
+        cursor.execute("""CREATE TABLE IF NOT EXISTS transition_reasons (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            high_count INT NOT NULL,
+            low_count INT NOT NULL,
+            window_scope TEXT NOT NULL,
+            sustained_trigger TEXT NOT NULL
             )""")
     
     def create_behavior_windows(self):

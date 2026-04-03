@@ -1,6 +1,6 @@
 import datetime
 import sqlite3
-from app.core import Transition, State, Proposal, Proposal_kind, Proposal_severity
+from app.core import Transition, State, Proposal, Proposal_kind, Proposal_severity, Proposal_windows_scope
 from .database import Database, get_default_path
 
 
@@ -9,11 +9,12 @@ db_path = get_default_path()
 
 
 # --- Converters ---
-def convert_row(row):
+def convert_row(row, ev_reason):
+
     proposal = Proposal(
         Proposal_kind(row["proposal_kind"]),
         Proposal_severity(row["proposal_severity"]),
-        row["evidence_reason"]
+        ev_reason
     )
     return Transition(
         State(row["previous_state"]),
@@ -35,6 +36,20 @@ class TransitionRepository:
     ):
         cursor = self.database.connection.cursor()
 
+        cursor.execute("""INSERT INTO transition_reasons (
+                high_count,
+                low_count,
+                window_scope,
+                sustained_trigger
+            ) VALUES (?, ?, ?, ?)""", (
+            transition.evidence_reason["high_count"],
+            transition.evidence_reason["low_count"],
+            transition.evidence_reason["window_scope"].value,
+            transition.evidence_reason["sustained_trigger"]
+        ))
+
+        reason_id = cursor.lastrowid
+
         cursor.execute("""INSERT INTO transitions (
                 previous_state,
                 current_state,
@@ -47,11 +62,31 @@ class TransitionRepository:
             transition.current_state.value, 
             transition.proposal_kind.value, 
             transition.proposal_severity.value, 
-            transition.evidence_reason, 
+            reason_id, 
             transition.timestamp.isoformat()
         ))
 
         self.database.connection.commit()
+    
+    def get_transtion_reasons(
+            self,
+            id
+        ):
+        self.database.connection.row_factory = sqlite3.Row
+        cursor = self.database.connection.cursor()
+
+        cursor.execute("SELECT * FROM transition_reasons WHERE id = ?", (id,))
+
+        row = cursor.fetchone()
+
+        return {
+            "high_count": row["high_count"],
+            "low_count": row["low_count"],
+            "window_scope": Proposal_windows_scope(row["window_scope"]),
+            "sustained_trigger": True if row["sustained_trigger"] == '1' else False
+        }
+
+
     
     def get_latest(
             self
@@ -64,7 +99,8 @@ class TransitionRepository:
         if row == None:
             return None
         else:
-            return convert_row(row)
+            ev_reason = self.get_transtion_reasons(row["evidence_reason"])
+            return convert_row(row, ev_reason)
 
     def get_latest_n(
             self,
@@ -81,7 +117,8 @@ class TransitionRepository:
         else:
             transition_list = []
             for row in rows:
-                transition_list.append(convert_row(row))
+                ev_reason = self.get_transtion_reasons(row["evidence_reason"])
+                transition_list.append(convert_row(row, ev_reason))
             
             return transition_list
 
@@ -98,11 +135,7 @@ class TransitionRepository:
         else:
             transition_list = []
             for row in rows:
-                transition_list.append(convert_row(row))
+                ev_reason = self.get_transtion_reasons(row["evidence_reason"])
+                transition_list.append(convert_row(row, ev_reason))
             
             return transition_list
-
-    def close(
-            self
-    ):
-        self.database.connection.close()
