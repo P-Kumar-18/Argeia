@@ -41,6 +41,17 @@ def test_timeout_when_never_started():
     assert task.timeout_time(current_time) == 60
 
 
+def test_no_timeout_before_scheduled_end():
+    scheduled_start = datetime.now()
+    scheduled_end = scheduled_start + timedelta(hours=1)
+
+    task = Task(1, "Not Expired", scheduled_start, scheduled_end)
+
+    current_time = scheduled_start + timedelta(minutes=30)
+
+    assert task.timeout_time(current_time) is None
+
+
 def test_start_exactly_on_time():
     start = datetime.now()
     end = start + timedelta(hours=1)

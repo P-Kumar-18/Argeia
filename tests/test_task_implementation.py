@@ -67,6 +67,51 @@ def test_start_task_updates_started_at():
     assert task.started_at == started_at
 
 
+def test_repository_restores_started_at_after_reload():
+    repo = FakeRepository()
+    window_repo = WindowRepository(db_path=":memory:")
+    task_repo = TaskRepository(db_path=":memory:")
+    behavior_runner = BehaviorRunner(transition_repository=repo, window_repository=window_repo)
+
+    runner = TaskRunner(behavior_runner=behavior_runner, task_repo=task_repo)
+    start_time = datetime.now()
+    end_time = start_time + timedelta(hours=1)
+
+    task = runner.create_task(title="Test", start_time=start_time, end_time=end_time, comment="For test")
+
+    started_at = start_time + timedelta(minutes=10)
+    runner.start_task(task, started_at)
+
+    loaded_task = task_repo.get_task_by_id(task.id)
+
+    assert loaded_task.started_at == started_at
+
+
+def test_repository_restores_completed_at_after_reload():
+    repo = FakeRepository()
+    window_repo = WindowRepository(db_path=":memory:")
+    task_repo = TaskRepository(db_path=":memory:")
+    behavior_runner = BehaviorRunner(transition_repository=repo, window_repository=window_repo)
+
+    runner = TaskRunner(behavior_runner=behavior_runner, task_repo=task_repo)
+    start_time = datetime.now()
+    end_time = start_time + timedelta(hours=1)
+
+    task = runner.create_task(title="Test", start_time=start_time, end_time=end_time, comment="For test")
+
+    started_at = start_time + timedelta(minutes=5)
+    completed_at = start_time + timedelta(minutes=35)
+
+    runner.start_task(task, started_at)
+    runner.complete_task(task, completed_at)
+
+    loaded_task = task_repo.get_task_by_id(task.id)
+
+    assert loaded_task.started_at == started_at
+    assert loaded_task.completed_at == completed_at
+    assert loaded_task.completed is True
+
+
 def test_complete_task():
     repo = FakeRepository()
     window_repo = WindowRepository(db_path=":memory:")

@@ -69,7 +69,7 @@ def test_stopped_on_time():
 
 
 def test_never_started():
-    start_time = datetime.now()
+    start_time = datetime.now() - timedelta(hours=3)
     end_time = start_time + timedelta(hours=2)
 
     task = Task(start_time=start_time, end_time=end_time, task_id=1, title="Test")
@@ -79,3 +79,14 @@ def test_never_started():
     assert signal.signal_type == Signal_type.TIMEOUT
     assert signal.time == 120
     assert signal.planned_duration == 120
+
+
+def test_never_started_before_end_is_not_timeout():
+    start_time = datetime.now()
+    end_time = start_time + timedelta(hours=2)
+
+    task = Task(start_time=start_time, end_time=end_time, task_id=1, title="Test")
+
+    signal = Signal(task)
+
+    assert signal.signal_type == Signal_type.NONE
