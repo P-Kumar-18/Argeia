@@ -53,7 +53,7 @@ class Database:
             high_count INT NOT NULL,
             low_count INT NOT NULL,
             windows_scope TEXT NOT NULL,
-            sustained_trigger TEXT NOT NULL
+            sustained_trigger INTEGER NOT NULL
             )""")
     
     def create_behavior_windows(self):
@@ -86,7 +86,7 @@ class Database:
             window_id INTEGER NOT NULL,
             polarity TEXT NOT NULL,
             strength TEXT NOT NULL,
-            confirmed TEXT NOT NULL,
+            confirmed INTEGER NOT NULL,
             CONSTRAINT FK_WindowId FOREIGN KEY (window_id) REFERENCES behavior_windows(id)
             )""")
     
@@ -103,5 +103,5 @@ class Database:
             user_id INTEGER,
             started_at TEXT,
             completed_at TEXT,
-            completed TEXT NOT NULL
+            completed INTEGER NOT NULL
             )""")
