@@ -1,27 +1,48 @@
 from datetime import datetime
 import sqlite3
 from .database import Database, get_default_path
+from app.domain import Task
 
 
 # --- Getting default database path ---
 db_path = get_default_path()
 
 
+def to_iso(value):
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value.isoformat()
+    return str(value)
+
+
+def to_bool(value):
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "t", "yes", "y"}
+    return bool(value)
+
+
 # --- Converter ---
-def convert_row(row):
-    if len(row) == 4:
-        return {
-            "title": row["title"],
-            "start_time": datetime.fromisoformat(row["schedule_for_start"]),
-            "comment": row["comment"],
-            "completed": True if row["completed"] == '1' else False
-        }
-    else:
-        return {
-            "title": row["title"],
-            "start_time": datetime.fromisoformat(row["schedule_for_start"]),
-            "comment": row["comment"]
-        }
+def converter(task):
+    if task:
+        return Task(
+            task_id=task["id"],
+            title=task["title"],
+            created_on=task["created_on"],
+            start_time=task["scheduled_for_start"],
+            end_time=task["scheduled_for_end"],
+            user_id=task["user_id"],
+            comment=task["comment"],
+            completed=to_bool(task["completed"]),
+            started_at=task["started_at"],
+            completed_at=task["completed_at"]
+        )
 
 
 # --- Task Repository ---
@@ -35,8 +56,8 @@ class TaskRepository:
 
         cursor.execute("""INSERT INTO tasks(
             title,
-            schedule_for_start,
-            schedule_for_end,
+            scheduled_for_start,
+            scheduled_for_end,
             created_on,
             comment,
             user_id,
@@ -44,14 +65,14 @@ class TaskRepository:
             completed_at,
             completed) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
                 title,
-                datetime.isoformat(start_time),
-                datetime.isoformat(end_time),
+                to_iso(start_time),
+                to_iso(end_time),
                 datetime.now().isoformat(),
                 comment,
                 user_id,
-                datetime.isoformat(started_at) if started_at else None,
-                datetime.isoformat(completed_at) if completed_at else None,
-                completed
+                to_iso(started_at),
+                to_iso(completed_at),
+                int(bool(completed))
             ))
         
         self.database.connection.commit()
@@ -60,14 +81,14 @@ class TaskRepository:
     def start_task(self, id, when):
         cursor = self.database.connection.cursor()
 
-        cursor.execute("""UPDATE tasks SET started_at = ? WHERE id = ?""", (datetime.isoformat(when), id))
+        cursor.execute("""UPDATE tasks SET started_at = ? WHERE id = ?""", (to_iso(when), id))
 
         self.database.connection.commit()
     
     def complete_task(self, id, when):
         cursor = self.database.connection.cursor()
 
-        cursor.execute("""UPDATE tasks SET completed_at = ?, completed = 1 WHERE id = ?""", (datetime.isoformat(when), id))  
+        cursor.execute("""UPDATE tasks SET completed_at = ?, completed = 1 WHERE id = ?""", (to_iso(when), id))  
 
         self.database.connection.commit()  
 
@@ -75,28 +96,73 @@ class TaskRepository:
         self.database.connection.row_factory = sqlite3.Row
         cursor = self.database.connection.cursor()
 
-        cursor.execute("SELECT title, schedule_for_start, comment FROM tasks WHERE completed = '1' ORDER BY id DESC LIMIT ?", (n,))
+        cursor.execute("SELECT * FROM tasks WHERE CAST(completed AS INTEGER) = 1 ORDER BY id DESC LIMIT ?", (n,))
 
-        rows = cursor.fetchall()
+        tasks = cursor.fetchall()
 
-        if not len(rows) == 0:
-            tasks_list = []
-            for row in rows:
-                tasks_list.append(convert_row(row))
-            
-            return tasks_list
+        task_list = []
+
+        for task in tasks:
+            task_list.append(converter(task=task))
+        
+        return task_list
     
-    def get_n_latest_upcoming_tasks(self, n):
+    def get_latest_upcoming_tasks(self):
         self.database.connection.row_factory = sqlite3.Row
         cursor = self.database.connection.cursor()
 
-        cursor.execute("SELECT title, schedule_for_start, comment FROM tasks WHERE completed = '0' ORDER BY schedule_for_start LIMIT ?", (n,))
+        cursor.execute("SELECT * FROM tasks WHERE CAST(completed AS INTEGER) = 0 ORDER BY scheduled_for_start")
 
-        rows = cursor.fetchall()
+        task = cursor.fetchone()
 
-        if not len(rows) == 0:
-            tasks_list = []
-            for row in rows:
-                tasks_list.append(convert_row(row))
-            
-            return tasks_list
+        return converter(task)
+    
+    def get_all_tasks(self):
+        self.database.connection.row_factory = sqlite3.Row
+        cursor = self.database.connection.cursor()
+
+        cursor.execute("SELECT * FROM tasks")
+
+        tasks = cursor.fetchall()
+
+        task_list = []
+
+        for task in tasks:
+            task_list.append(converter(task=task))
+        
+        return task_list
+
+    def get_task_by_id(self, id):
+        self.database.connection.row_factory = sqlite3.Row
+        cursor = self.database.connection.cursor()
+
+        cursor.execute("SELECT * FROM tasks WHERE id=?", (id,))
+
+        task = cursor.fetchone()
+
+        return converter(task=task)
+    
+    def update_task(self, id, title, comment, start_time, end_time):
+        cursor = self.database.connection.cursor()
+
+        cursor.execute("""UPDATE tasks SET 
+            title=?,
+            comment=?,
+            scheduled_for_start=?,
+            scheduled_for_end=?
+            WHERE id=?""", (
+                title,
+                comment,
+                to_iso(start_time),
+                to_iso(end_time),
+                id
+            ))
+        
+        self.database.connection.commit()
+    
+    def delete_task(self, id):
+        cursor = self.database.connection.cursor()
+
+        cursor.execute("DELETE FROM tasks WHERE id=?", (id,))
+
+        self.database.connection.commit()
