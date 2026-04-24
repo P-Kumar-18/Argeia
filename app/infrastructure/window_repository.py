@@ -8,6 +8,18 @@ from app.core import Pattern_polarity_type, Pattern_strength_type
 db_path = get_default_path()
 
 
+def to_bool(value):
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "t", "yes", "y"}
+    return bool(value)
+
+
 # --- Converters ---
 def convert_row_signal(row):
     return Signal(signal_type=Signal_type(row["signal_type"]), time=row["signal_time"], planned_duration=row["planned_duration"])
@@ -17,7 +29,7 @@ def convert_row_pattern(row):
     return {
         "polarity": Pattern_polarity_type(row["polarity"]),
         "strength": Pattern_strength_type(row["strength"]),
-        "confirmed": True if row["confirmed"] else False
+        "confirmed": to_bool(row["confirmed"])
     }
 
 
@@ -34,8 +46,8 @@ class WindowRepository:
                 window_end,
                 status
             ) VALUES (?, ?, ?)""", (
-                window.window_start,
-                window.window_end,
+                window.window_start.isoformat(),
+                window.window_end.isoformat(),
                 window.window_status.value
         ))
 
@@ -74,7 +86,7 @@ class WindowRepository:
             window_id,
             pattern["polarity"].value,
             pattern["strength"].value,
-            pattern["confirmed"]
+            int(bool(pattern["confirmed"]))
         ))
 
         self.database.connection.commit()
@@ -100,11 +112,11 @@ class WindowRepository:
         if len(rows) == 0:
             return []
         else:
-            self.signal_list = []
+            signal_list = []
             for row in rows:
-                self.signal_list.append(convert_row_signal(row))
+                signal_list.append(convert_row_signal(row))
             
-            return self.signal_list
+            return signal_list
 
     def get_patterns(self, window):
         self.database.connection.row_factory = sqlite3.Row
@@ -115,11 +127,11 @@ class WindowRepository:
         if len(rows) == 0:
             return []
         else:
-            self.pattern_list = []
+            pattern_list = []
             for row in rows:
-                self.pattern_list.append(convert_row_pattern(row))
+                pattern_list.append(convert_row_pattern(row))
             
-            return self.pattern_list
+            return pattern_list
     
     def get_previous_window(self, required_window = 3):
         self.database.connection.row_factory = sqlite3.Row
