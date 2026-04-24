@@ -4,18 +4,20 @@ from datetime import datetime
 # --- Task ---
 class Task:
     # NOTE: Task and Tracking field may be separated in the future.
-    def __init__(self, task_id, title, start_time, end_time, user_id=None, comment=None):
+    def __init__(self, task_id, title, start_time, end_time, created_on = None, user_id=None, comment=None, completed = False, started_at=None, completed_at=None):
         self.id = task_id
-        self.title = title
-        self.scheduled_for_start = start_time
-        self.scheduled_for_end = end_time
-        self.created_on = datetime.now()
+        self.title = title        
+        self.scheduled_for_start = start_time if not type(start_time) is str else datetime.fromisoformat(start_time)
+        self.scheduled_for_end = end_time if not type(end_time) is str else datetime.fromisoformat(end_time)
+        self.created_on = created_on if not type(created_on) is str else datetime.fromisoformat(created_on)
+        if self.created_on is None:
+            self.created_on = datetime.now()
         self.comment = comment
         self.user_id = user_id
 
-        self.started_at = None
-        self.completed_at = None
-        self.completed = False
+        self.started_at = started_at if not type(started_at) is str else datetime.fromisoformat(started_at)
+        self.completed_at = completed_at if not type(completed_at) is str else datetime.fromisoformat(completed_at)
+        self.completed = completed
     
     # --- Tracking ---
     def start(self, when=None):
@@ -39,8 +41,12 @@ class Task:
 
         current_time = current_time or datetime.now()
 
+        # Not a timeout until the task window has actually ended.
+        if current_time < self.scheduled_for_end:
+            return None
+
         delta = self.scheduled_for_end - self.scheduled_for_start
-        return int(delta.total_seconds() // 60)
+        return max(int(delta.total_seconds() // 60), 0)
     
     # For not working the planned time
     def underwork_time(self):
