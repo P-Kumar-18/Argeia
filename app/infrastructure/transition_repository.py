@@ -8,6 +8,35 @@ from .database import Database, get_default_path
 db_path = get_default_path()
 
 
+def to_bool(value):
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "t", "yes", "y"}
+    return bool(value)
+
+
+def normalize_evidence_reason(evidence_reason):
+    if isinstance(evidence_reason, dict):
+        return {
+            "high_count": evidence_reason.get("high_count", 0),
+            "low_count": evidence_reason.get("low_count", 0),
+            "windows_scope": evidence_reason.get("windows_scope", Proposal_windows_scope.SINGLE_WINDOW),
+            "sustained_trigger": bool(evidence_reason.get("sustained_trigger", False))
+        }
+
+    return {
+        "high_count": 0,
+        "low_count": 0,
+        "windows_scope": Proposal_windows_scope.SINGLE_WINDOW,
+        "sustained_trigger": False
+    }
+
+
 # --- Converters ---
 def convert_row(row, ev_reason):
 
@@ -35,17 +64,18 @@ class TransitionRepository:
         transition: Transition
     ):
         cursor = self.database.connection.cursor()
+        evidence_reason = normalize_evidence_reason(transition.evidence_reason)
 
         cursor.execute("""INSERT INTO transition_reasons (
                 high_count,
                 low_count,
-                window_scope,
+                windows_scope,
                 sustained_trigger
             ) VALUES (?, ?, ?, ?)""", (
-            transition.evidence_reason["high_count"],
-            transition.evidence_reason["low_count"],
-            transition.evidence_reason["window_scope"].value,
-            transition.evidence_reason["sustained_trigger"]
+            evidence_reason["high_count"],
+            evidence_reason["low_count"],
+            evidence_reason["windows_scope"].value,
+            int(bool(evidence_reason["sustained_trigger"]))
         ))
 
         reason_id = cursor.lastrowid
@@ -68,7 +98,7 @@ class TransitionRepository:
 
         self.database.connection.commit()
     
-    def get_transtion_reasons(
+    def get_transition_reasons(
             self,
             id
         ):
@@ -82,12 +112,14 @@ class TransitionRepository:
         return {
             "high_count": row["high_count"],
             "low_count": row["low_count"],
-            "window_scope": Proposal_windows_scope(row["window_scope"]),
-            "sustained_trigger": True if row["sustained_trigger"] == '1' else False
+            "windows_scope": Proposal_windows_scope(row["windows_scope"]),
+            "sustained_trigger": to_bool(row["sustained_trigger"])
         }
 
+    # Backward-compatible alias for old typo.
+    def get_transtion_reasons(self, id):
+        return self.get_transition_reasons(id)
 
-    
     def get_latest(
             self
     ):
@@ -99,7 +131,7 @@ class TransitionRepository:
         if row == None:
             return None
         else:
-            ev_reason = self.get_transtion_reasons(row["evidence_reason"])
+            ev_reason = self.get_transition_reasons(row["evidence_reason"])
             return convert_row(row, ev_reason)
 
     def get_latest_n(
@@ -117,7 +149,7 @@ class TransitionRepository:
         else:
             transition_list = []
             for row in rows:
-                ev_reason = self.get_transtion_reasons(row["evidence_reason"])
+                ev_reason = self.get_transition_reasons(row["evidence_reason"])
                 transition_list.append(convert_row(row, ev_reason))
             
             return transition_list
@@ -135,7 +167,7 @@ class TransitionRepository:
         else:
             transition_list = []
             for row in rows:
-                ev_reason = self.get_transtion_reasons(row["evidence_reason"])
+                ev_reason = self.get_transition_reasons(row["evidence_reason"])
                 transition_list.append(convert_row(row, ev_reason))
             
             return transition_list
