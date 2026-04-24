@@ -12,7 +12,7 @@ def get_default_path():
 class Database:
     def __init__(self, db_path):
         self.db_path = db_path
-        self.connection = sqlite3.connect(self.db_path)
+        self.connection = sqlite3.connect(self.db_path, check_same_thread=False)
         self.initialize_schema()
     
     def initialize_schema(self):
@@ -52,7 +52,7 @@ class Database:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             high_count INT NOT NULL,
             low_count INT NOT NULL,
-            window_scope TEXT NOT NULL,
+            windows_scope TEXT NOT NULL,
             sustained_trigger TEXT NOT NULL
             )""")
     
@@ -96,8 +96,8 @@ class Database:
         cursor.execute("""CREATE TABLE IF NOT EXISTS tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
-            schedule_for_start TEXT NOT NULL,
-            schedule_for_end TEXT NOT NULL,
+            scheduled_for_start TEXT NOT NULL,
+            scheduled_for_end TEXT NOT NULL,
             created_on TEXT NOT NULL,
             comment TEXT,
             user_id INTEGER,
