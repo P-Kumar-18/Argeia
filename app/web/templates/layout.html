@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')  }}">
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+    <body>
+        <!-- NAV -->
+        <nav id="navbar">
+            <a href="{{ url_for('main.landing') }}" class="logo" >
+                <span class="nav-logo-text">Argeia</span>
+            </a>
+            <ul class="nav-links">
+                {% block nav_links %}{% endblock %}
+            </ul>
+        </nav>
+        <!-- HOME -->
+        <div class="container">
+            <div id="state">
+                {% block state %}{% endblock %}
+            </div>
+                {% block body %}{% endblock %}
+        </div>
+    </body>
+</html>

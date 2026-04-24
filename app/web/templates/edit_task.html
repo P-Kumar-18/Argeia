@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Edit task
+{% endblock %}
+
+{% block nav_links %}
+    <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('main.tasks') }}">Tasks</a></li>
+{% endblock %}
+
+{% block body %}
+    <form id="editTask" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% if error %}
+            <p class="error" style="color: #b42318;">{{ error }}</p>
+        {% endif %}
+        <label for="title">
+            Title:
+            <input id="title" name="title" type="text" placeholder="{{ title }}">
+        </label>
+        <label for="comment">
+            Comment:
+            <input id="comment" name="comment" type="text" placeholder="{{ comment }}">
+        </label>
+        <label for="start_time">
+            Start Time:
+            <input id="start_time" name="start_time" type="datetime-local" min="{{ now }}">
+        </label>
+        <label for="end_time">
+            End Time:
+            <input id="end_time" name="end_time" type="datetime-local" min="{{ now }}">
+        </label>
+        <div class="button">
+            <label for="delete">
+                <button id="delete" name="action" type="submit" value="delete">Delete</button>
+            </label>
+            <label for="submit">
+                <button id="update" name="action" type="submit" value="update">Submit</button>
+            </label>
+        </div>
+    </form>
+    <script>
+        const isCompleted = {{ task_completed | tojson }};
+        const updateBtn = document.getElementById('update');
+
+        if (isCompleted) updateBtn.disabled = true;
+    </script>
+{% endblock %}

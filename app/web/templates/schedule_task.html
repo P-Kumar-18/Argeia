@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Schedule Task
+{% endblock %}
+
+{% block nav_links %}
+    <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('main.tasks') }}">Tasks</a></li>
+{% endblock %}
+
+{% block body %}
+    <form action="{{ url_for('main.schedule_task') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% if error %}
+            <p class="error" style="color: #b42318;">{{ error }}</p>
+        {% endif %}
+        <label for="title">
+            Title:
+            <input id="title" name="title" type="text" placeholder="Title" required>
+        </label>
+        <label for="comment">
+            Comment [Optional]:
+            <input id="comment" name="comment" type="text" placeholder="Comment">
+        </label>
+        <label for="start_time">
+            Start Time:
+            <input id="start_time" name="start_time" type="datetime-local" min="{{ now }}" required>
+        </label>
+        <label for="end_time">
+            End Time:
+            <input id="end_time" name="end_time" type="datetime-local" min="{{ now }}" required>
+        </label>
+        <div class="button">
+            <label for="submit">
+                <button id="submit" type="submit">Submit</button>
+            </label>
+        </div>
+    </form>
+{% endblock %}

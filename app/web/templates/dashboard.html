@@ -1,0 +1,112 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block nav_links %}
+    <li><a href="{{ url_for('main.tasks') }}">Tasks</a></li>
+    <li><a href="{{ url_for('main.transition_analysis') }}">Analysis</a></li>
+{% endblock %}
+<!--- Current State --->
+{% block state %}
+    <div class="state-banner">
+        <div class="state-label">Current State</div>
+        <div class="state-value">{{ current_state.value }}</div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <!--- List of completed tasks --->
+    <h2>Completed Tasks</h2>
+    {% if not completed_tasks %}
+        <p>No Completed Tasks</p>
+    {% else %}
+            <div class="task-card">
+                <div class="task-card-header completed-tasks">
+                    <div>Title</div>
+                    <div>Comment</div>
+                    <div>Start Time</div>
+                    <div>End Time</div>
+                </div>
+
+                {% for task in completed_tasks %}
+                    <div class="task-card-row completed-tasks">
+                        <div >{{ task.title }}</div>
+                        <div>{{ task.comment }}</div>
+                        <div>{{ task.scheduled_for_start }}</div>
+                        <div>{{ task.scheduled_for_end }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+    {% endif %}
+    <!--- Latest upcoming tasks --->
+    <h2>Upcoming Tasks</h2>
+    {% if not upcoming_task %}
+        <p>No Upcoming Tasks</p>
+    {% else %}
+        <div class="task-card">
+            <div class="task-card-header upcoming-tasks">
+                <div>Title</div>
+                <div>Start Time</div>
+                <div>Started At</div>
+                <div>Comment</div>
+                <div>Actions</div>
+            </div>
+            <div class="task-card-row upcoming-tasks">
+                <div>{{ upcoming_task.title }}</div>
+                <div>{{ upcoming_task.scheduled_for_start }}</div>
+                <div>{{ upcoming_task.started_at if upcoming_task.started_at else "Not started" }}</div>
+                <div>{{ upcoming_task.comment }}</div>
+                <div class="task-actions">
+                    <button class="btn-start" 
+                        onclick="taskHandler(event, 'start', {{ upcoming_task.id }})"
+                        id="btn-start">
+                        Start
+                    </button>
+                    <button class="btn-end" 
+                        onclick="taskHandler(event, 'end', {{ upcoming_task.id }})"
+                        id="btn-end">
+                        End
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <script>
+        const now = new Date();
+        const scheduledStart = new Date("{{ upcoming_task.scheduled_for_start }}");
+        const isStarted = {{ 'true' if upcoming_task.started_at else 'false' }};
+
+        const startBtn = document.getElementById('btn-start');
+        const endBtn = document.getElementById('btn-end');
+
+        if (now < scheduledStart || isStarted) startBtn.disabled = true;
+
+        if (!isStarted) endBtn.disabled = true;
+
+        function taskHandler(event, action, id) {
+            fetch('/dashboard', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({'action': action, 'id': id})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status == 'start') {
+                    startBtn.disabled = true;
+                    endBtn.disabled = false;
+                    location.reload();
+                } else if (data.status == 'end') {
+                    endBtn.disabled = true;
+                    location.reload();
+                }
+            })
+            .catch(err => console.error("Error:", err));
+        }
+    </script>
+{% endblock %}

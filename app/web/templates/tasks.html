@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Tasks
+{% endblock %}
+
+{% block nav_links %}
+    <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('main.schedule_task') }}">Add task</a></li>
+{% endblock %}
+
+{% block body %}
+    <!--- Hidden form --->
+    <form id="editTaskForm" action="" method="POST" style="display: none;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input id="formTaskId" name="task_id" type="hidden" value="">
+    </form>
+
+    <!--- Listing all tasks --->
+    {% for task in tasks %}
+        <div class="task-card" onclick="submitPost({{ task.id }})" style="cursor: pointer; animation-delay: {{ loop.index * 0.1 }}s">
+            <div class="task-card-header task-analysis">
+                <div>Title</div>
+                <div>Scheduled Start</div>
+                <div>Scheduled End</div>
+                <div>Status</div>
+            </div>
+            <div class="task-card-row task-analysis">
+                <div>{{ task.title }}</div>
+                <div>{{ task.scheduled_for_start }}</div>
+                <div>{{ task.scheduled_for_end }}</div>
+                <div>{{ "Completed" if task.completed else "Upcoming" }}</div>
+            </div>
+        </div>
+    {% else %}
+        <p>No tasks</p>
+    {% endfor %}
+
+    <!--- JS implementation --->
+    <script>
+        function submitPost(id) {
+            const form = document.getElementById('editTaskForm');
+
+            document.getElementById('formTaskId').value = id;
+            
+            const placeholderUrl = "{{ url_for('main.edit_task', task_id='0') }}";
+            form.action = placeholderUrl.replace('0', id);
+
+            form.submit();
+        }
+    </script>
+{% endblock %}

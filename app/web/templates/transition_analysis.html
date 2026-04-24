@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Transition Analysis
+{% endblock %}
+
+{% block nav_links %}
+    <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+{% endblock %}
+
+{% block body %}
+    {% for transition in transitions %}
+        <div class="task-card" style="animation-delay: {{ loop.index * 0.1 }}s">
+            <div class="task-card-row transition-analysis">
+                <div><strong>{{ transition.previous_state.value }}</strong> → <strong>{{ transition.current_state.value }}</strong></div>
+                <div>{{ transition.proposal_kind.value }}</div>
+                <div>{{ transition.proposal_severity.value }}</div>
+                <div>{{ transition.timestamp }}</div>
+            </div>
+            <details>
+                <summary>Evidence</summary>
+                <div class="evidence">
+                    <div>High Count: {{ transition.evidence_reason["high_count"] }}</div>
+                    <div>Low Count: {{ transition.evidence_reason["low_count"] }}</div>
+                    <div>Window Scope: {{ transition.evidence_reason["windows_scope"].value }}</div>
+                    <div>Sustained Trigger: {{ transition.evidence_reason["sustained_trigger"] }}</div>
+                </div>
+            </details>
+        </div>
+    {% else %}
+        <p>No transitions</p>
+    {% endfor %}
+{% endblock %}
