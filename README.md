@@ -161,7 +161,7 @@ argeia/
 │   ├── test_pattern_detection.py       # Tests for pattern detection
 │   ├── test_runner_restart.py          # Tests for state reconstruction on restart
 │   ├── test_signals.py                 # Tests for signal extraction
-│   ├── test_state_transitions.py       # Tests for behavioral state transitions
+│   ├── test_state_transition.py        # Tests for behavioral state transitions
 │   ├── test_task_implementation.py     # Tests for TaskRunner and TaskRepository
 │   ├── test_task.py                    # Tests for task behavior
 │   └── test_windows_implementation.py  # Tests for Window and WindowManager
@@ -195,7 +195,7 @@ pip install -r requirements.txt
 
 ### 4. Run the application
 ```bash
-flask --app main run
+flask --app app.main run
 ```
 
 ### 5. Run tests
