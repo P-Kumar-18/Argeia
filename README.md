@@ -16,12 +16,13 @@ This project is being developed incrementally with a strong emphasis on **clean 
 
 - Define tasks with planned start and end times
 - Track actual task execution — start and completion
+- Edit and delete upcoming tasks
 - Task persistence via SQLite
 - Full pipeline entry point through TaskRunner — create, start, and complete tasks
 - Detect procrastination signals:
   - start delay
   - underwork
-  - timeout
+  - timeout (only evaluated after scheduled end time)
 - Analytical signal layer exposing absolute deviations from planned behavior
 - Pattern detection layer that interprets repeated signals over time:
   - window-level confirmation
@@ -41,9 +42,11 @@ This project is being developed incrementally with a strong emphasis on **clean 
 - Behavioral state engine modeling long-term engagement:
   - Stable → Drifting → Strained → Disengaged
 - Structured Transition events emitted on accepted state changes
-- Persistent history for transitions, windows, and signals via SQLite
+- Transition evidence stored in a separate normalized table
+- Persistent history for transitions, windows, signals, and tasks via SQLite
 - Full state and window reconstruction on startup
-- Web interface via Flask with server-rendered templates
+- Web interface via Flask with server-rendered Jinja2 templates
+- CSRF protection via Flask-WTF across all form submissions
 
 ---
 
@@ -52,7 +55,7 @@ This project is being developed incrementally with a strong emphasis on **clean 
 Argeia identifies procrastination through three independent signals:
 
 - **Start Delay** — starting later than scheduled
-- **Timeout** — never starting after the planned window ends
+- **Timeout** — never starting after the planned window ends (only evaluated after scheduled end time)
 - **Underwork** — stopping a task earlier than planned
 
 Signals are treated as factual measurements and do not encode severity or judgment. Each signal is isolated, testable, and feeds into higher-level pattern detection.
@@ -82,7 +85,7 @@ Tasks → Signals → Windows → Pattern Batching → Patterns → Behavior Eva
 - **Behavior Evaluation** resolves evidence conflicts and produces structured proposals
 - **State Engine** updates long-term engagement state conservatively based on proposals
 - **Transition Events** capture each state change with full evidence for explainability
-- **Persistence** stores transitions, windows, and signals to SQLite
+- **Persistence** stores transitions, windows, signals, and tasks to SQLite
 - **State Reconstruction** restores the full behavioral context on restart
 
 The state engine does not inspect patterns directly — it only acts on proposals. This keeps each layer independently testable and decoupled.
@@ -123,9 +126,28 @@ argeia/
 │   │   ├── behavior_runner.py          # Application layer coordinating state engine and persistence
 │   │   ├── task_runner.py              # Task lifecycle and pipeline entry point
 │   │   └── window_manager.py           # Window lifecycle and pattern batching
+│   ├── web/
+│   │   ├── routes/
+│   │   │   ├── __init__.py             # Blueprint registration
+│   │   │   ├── dashboard.py            # Dashboard route
+│   │   │   ├── edit_task.py            # Edit and delete task route
+│   │   │   ├── landing.py              # Landing page route
+│   │   │   ├── schedule_task.py        # Schedule task route
+│   │   │   ├── tasks.py                # All tasks listing route
+│   │   │   └── transition_analysis.py  # Transition analysis route
+│   │   ├── static/
+│   │   │   └── styles.css              # Full application stylesheet
+│   │   ├── templates/
+│   │   │   ├── dashboard.html          # Dashboard page
+│   │   │   ├── edit_task.html          # Edit task form
+│   │   │   ├── landing_page.html       # Landing page
+│   │   │   ├── layout.html             # Shared base layout
+│   │   │   ├── schedule_task.html      # Schedule task form
+│   │   │   ├── tasks.html              # All tasks page
+│   │   │   └── transition_analysis.html # Analysis page
+│   │   └── __init__.py
 │   ├── __init__.py                     # Flask app factory
-│   ├── main.py                         # Application entry point
-│   └── routes.py                       # Web routes
+│   └── main.py                         # Application entry point
 ├── data/
 │   └── argeia.db                       # SQLite database
 ├── docs/
@@ -173,7 +195,7 @@ pip install -r requirements.txt
 
 ### 4. Run the application
 ```bash
-python app/main.py
+flask --app main run
 ```
 
 ### 5. Run tests
@@ -190,28 +212,35 @@ All tests should pass.
 - Python
 - Pytest
 - Flask
+- Flask-WTF
 - SQLite
-- Jinja2 (in progress)
-- HTML / CSS (in progress)
+- Jinja2
+- HTML / CSS
 
 ---
 
 ## 🎯 Project Status
 
-The behavioral core is complete and fully integrated. Tasks flow from input through signal extraction, window management, pattern detection, behavior evaluation, and state transitions in a single pipeline coordinated by BehaviorRunner.
+**This is the completed v1 of Argeia.** The behavioral core and web interface are fully integrated. Tasks flow from input through signal extraction, window management, pattern detection, behavior evaluation, and state transitions in a single pipeline coordinated by BehaviorRunner, with a complete web UI on top.
+
+Further updates and improvements to Argeia may be made in the future.
 
 **Implemented:**
 - Task domain model, persistence, and lifecycle management via TaskRunner
+- Task editing and deletion
 - Full pipeline integration from task input to state transition via BehaviorRunner
 - Comprehensive unit and integration tests
 - Weekly window lifecycle with automatic open/close and restart recovery
 - Intra-window pattern batching and signal accumulation
 - Pattern detection with polarity and strength classification
 - Proposal-driven behavioral state transitions
-- Structured transition events for full behavioral explainability
-- Persistent storage for transitions, windows, and signals
-- Flask app factory with blueprint registration
-- Server-rendered web interface with Jinja2 (in progress)
+- Structured transition events with normalized evidence persistence
+- Persistent storage for transitions, windows, signals, and tasks
+- Full state reconstruction on restart
+- Flask app factory with blueprint registration and CSRF protection
+- Server-rendered web interface with Jinja2
+- Landing page, dashboard, task management, and transition analysis pages
+- Warm terracotta design system with card layouts and row animations
 
 ---
 
