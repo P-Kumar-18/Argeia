@@ -7,3 +7,48 @@
 {% block nav_links %}
     <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
 {% endblock %}
+
+{% block body %}
+    <section class="landing-page">
+        <h1>Argeia helps you turn intent into reliable action.</h1>
+        <p>
+            Argeia is a lightweight behavior-aware planning system for personal execution.
+            It combines scheduling, task progress, and simple state modeling so you can see
+            not only what you planned, but how you actually behaved over time.
+        </p>
+        <div class="landing-cards">
+            <div class="landing-card">
+                <h2>What Argeia is</h2>
+                <p>
+                    At its core, Argeia is a task and behavior engine. It stores tasks,
+                    tracks start and completion events, evaluates behavioral signals,
+                    and keeps a current state you can monitor from the dashboard.
+                </p>
+            </div>
+
+            <div class="landing-card">
+                <h2>How it works</h2>
+                <ol class="landing-steps">
+                    <li><strong>Plan:</strong> Schedule tasks with start and end windows.</li>
+                    <li><strong>Execute:</strong> Start and end tasks as you work through them.</li>
+                    <li><strong>Evaluate:</strong> Argeia analyzes timing and transitions between actions.</li>
+                    <li><strong>Adapt:</strong> Use state and transition insights to improve your next plan.</li>
+                </ol>
+            </div>
+
+            <div class="landing-card">
+                <h2>What it does for you</h2>
+                <ul class="landing-list">
+                    <li>Shows your current behavioral state at a glance.</li>
+                    <li>Separates upcoming work from completed execution.</li>
+                    <li>Records transition history for reflection and analysis.</li>
+                    <li>Creates a feedback loop between planning and real outcomes.</li>
+                </ul>
+            </div>
+        </div>
+
+        <p class="landing-cta">
+            Start by adding tasks, then open the dashboard to run your day with real-time feedback.
+        </p>
+    </section>
+{% endblock %}
