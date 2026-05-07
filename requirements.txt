@@ -3,3 +3,4 @@ flask-wtf
 sqlalchemy
 pandas
 pytest
+gunicorn

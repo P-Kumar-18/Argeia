@@ -1,13 +1,15 @@
 from flask import Flask
 from flask_wtf import CSRFProtect
+import os
 from .infrastructure import Database, TaskRepository, TransitionRepository, WindowRepository, get_default_path
 from .runner import TaskRunner, BehaviorRunner, WindowManager
 
 
 def create_app():
+    os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data'), exist_ok=True)
     app = Flask(__name__, template_folder="web/templates", static_folder="web/static")
 
-    app.config["SECRET_KEY"] = "dev"
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev")
     csrf = CSRFProtect(app)
 
     # Database
